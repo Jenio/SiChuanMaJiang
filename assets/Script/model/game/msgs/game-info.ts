@@ -52,6 +52,11 @@ export interface MineData {
   icon: string;
 
   /**
+   * 玩家的分数。
+   */
+  score: number;
+
+  /**
    * 我的手牌（还未发牌前为空数组）。
    */
   hands: CardId[];
@@ -96,6 +101,11 @@ export interface OtherUserData {
    * 头像。
    */
   icon: string;
+
+  /**
+   * 玩家的分数。
+   */
+  score: number;
 
   /**
    * 手牌数量（开始发牌前此值为0）。
@@ -441,6 +451,26 @@ export interface ResultClientInfo {
    * 南方玩家的胡牌，仅当南方玩家胡时存在。
    */
   southHu?: CardId;
+
+  /**
+   * 东方玩家的最终分数（多局总分）。
+   */
+  eastScore: number;
+
+  /**
+   * 北方玩家的最终分数（多局总分）。
+   */
+  northScore: number;
+
+  /**
+   * 西方玩家的最终分数（多局总分）。
+   */
+  westScore: number;
+
+  /**
+   * 南方玩家的最终分数（多局总分）。
+   */
+  southScore: number;
 }
 
 /**

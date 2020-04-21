@@ -1098,8 +1098,7 @@ export default class Game extends cc.Component {
 
     // 更新所有玩家的头像信息。
     if (this.myInfo) {
-      //TODO 目前服务端没有下发分数，未来需要加上。
-      this.myInfo.setup(gi.mine.icon, gi.mine.name, 0, gi.mine.dir === gi.banker);
+      this.myInfo.setup(gi.mine.icon, gi.mine.name, gi.mine.score, gi.mine.dir === gi.banker);
       if (gi.mine.skipType === 'wan') {
         this.myInfo.setQue(CardType.Wan);
       } else if (gi.mine.skipType === 'suo') {
@@ -1112,8 +1111,7 @@ export default class Game extends cc.Component {
       let dir = fromDirChar(pi.dir);
       let userInfo = this._getPlayerInfo(dir);
       if (userInfo) {
-        //TODO 目前服务端没有下发分数，未来需要加上。
-        userInfo.setup(pi.icon, pi.name, 0, pi.dir === gi.banker);
+        userInfo.setup(pi.icon, pi.name, pi.score, pi.dir === gi.banker);
         if (pi.skipType === 'wan') {
           userInfo.setQue(CardType.Wan);
         } else if (pi.skipType === 'suo') {
@@ -2276,6 +2274,24 @@ export default class Game extends cc.Component {
           }
         }
       }
+    }
+
+    // 更新玩家的分数。
+    let ui = this._getPlayerInfo(Direction.East);
+    if (ui) {
+      ui.setScore(notify.eastScore);
+    }
+    ui = this._getPlayerInfo(Direction.North);
+    if (ui) {
+      ui.setScore(notify.northScore);
+    }
+    ui = this._getPlayerInfo(Direction.West);
+    if (ui) {
+      ui.setScore(notify.westScore);
+    }
+    ui = this._getPlayerInfo(Direction.South);
+    if (ui) {
+      ui.setScore(notify.southScore);
     }
 
     // 延迟弹出结算界面。

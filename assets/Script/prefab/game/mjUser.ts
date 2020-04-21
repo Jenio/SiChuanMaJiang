@@ -147,6 +147,16 @@ export default class MjUser extends cc.Component {
   }
 
   /**
+   * 设置分数。
+   * @param score 分数。
+   */
+  setScore(score: number) {
+    if (this.scoreLabel) {
+      this.scoreLabel.string = score.toString();
+    }
+  }
+
+  /**
    * 重置到初始状态。
    */
   reset() {

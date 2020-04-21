@@ -9,6 +9,12 @@ const { ccclass, property } = cc._decorator;
 export default class MjUser extends cc.Component {
 
   /**
+   * 离线节点。
+   */
+  @property(cc.Node)
+  offlineNode: cc.Node = null;
+
+  /**
    * 头像精灵。
    */
   @property(cc.Sprite)
@@ -64,6 +70,11 @@ export default class MjUser extends cc.Component {
 
   private _name?: string;
   private _icon?: string;
+
+  /**
+   * 保活超时处理器。
+   */
+  private _keepAliveTimeoutHandler = this._onKeepAliveTimeout.bind(this);
 
   get userName() {
     return this._name;
@@ -165,6 +176,26 @@ export default class MjUser extends cc.Component {
     }
     if (this.bankerNode) {
       this.bankerNode.active = false;
+    }
+  }
+
+  /**
+   * 保活。
+   */
+  keepAlive() {
+    this.unschedule(this._keepAliveTimeoutHandler);
+    this.scheduleOnce(this._keepAliveTimeoutHandler, 5);
+    if (this.offlineNode && this.offlineNode.active) {
+      this.offlineNode.active = false;
+    }
+  }
+
+  /**
+   * 保活超时处理。
+   */
+  private _onKeepAliveTimeout() {
+    if (this.offlineNode) {
+      this.offlineNode.active = true;
     }
   }
 }

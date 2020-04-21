@@ -4,7 +4,7 @@ import MjUser from './game/mjUser';
 import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
 import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe } from '../model/game/concept';
-import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify } from '../model/game/msgs/common';
+import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify } from '../model/game/msgs/common';
 import MjMyCardsController from './game/mjMyCardsController';
 import MjPengGangHuGuoUi from './game/mjPengGangHuGuoUi';
 import MjOtherCardsController from './game/mjOtherCardsController';
@@ -209,6 +209,7 @@ export default class Game extends cc.Component {
   private _buGangNotifyHandler = this._onBuGangNotify.bind(this);
   private _anGangNotifyHandler = this._onAnGangNotify.bind(this);
   private _finishInningNotifyHandler = this._onFinishInningNotify.bind(this);
+  private _keepAliveNotifyHandler = this._onKeepAliveNotify.bind(this);
 
   /**
    * 是否已销毁。
@@ -255,6 +256,11 @@ export default class Game extends cc.Component {
    */
   private _skipTipTimes = 0;
 
+  /**
+   * 是否已开始保活。
+   */
+  private _keepAliveRunning = false;
+
   onLoad() {
     if (this.rootNode) {
       let size = cc.view.getVisibleSize();
@@ -283,6 +289,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.on('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.on('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.on('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.on('game/keepAliveNotify', this._keepAliveNotifyHandler);
     this._sendQueryGame();
   }
 
@@ -300,6 +307,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.off('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.off('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
   }
 
   /**
@@ -1123,6 +1131,16 @@ export default class Game extends cc.Component {
       return;
     }
     this._acceptQueryNotify = false;
+
+    // 每秒一次保活。
+    if (!this._keepAliveRunning) {
+      this._keepAliveRunning = true;
+      this.schedule(() => {
+        cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).catch((err) => {
+          cc.error(err);
+        });
+      }, 1, cc.macro.REPEAT_FOREVER);
+    }
 
     this._bankerDir = fromDirChar(gi.banker);
     this._myDir = fromDirChar(gi.mine.dir);
@@ -2372,6 +2390,13 @@ export default class Game extends cc.Component {
         cc.error(err);
       });
     }, 2);
+  }
+
+  private _onKeepAliveNotify(notify: KeepAliveNotify) {
+    let userInfo = this._getPlayerInfo(fromDirChar(notify.dir));
+    if (userInfo !== this.myInfo) {
+      userInfo.keepAlive();
+    }
   }
 
   /**

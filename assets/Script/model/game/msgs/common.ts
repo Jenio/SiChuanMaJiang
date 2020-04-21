@@ -276,3 +276,24 @@ export interface AnGangNotify {
    */
   cardId: number;
 }
+
+/**
+ * 保活通知。
+ */
+export interface KeepAliveNotify {
+
+  /**
+   * 房间ID。
+   */
+  roomId: string;
+
+  /**
+   * 保活用户ID。
+   */
+  uid: number;
+
+  /**
+   * 保活用户所在方位。
+   */
+  dir: string;
+}

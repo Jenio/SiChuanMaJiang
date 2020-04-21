@@ -1828,8 +1828,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
-
-      //TODO 倒计时30秒。
+      this.centerIndicator.beginCountDown(30);
     }
   }
 
@@ -1892,8 +1891,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
-
-      //TODO 倒计时30秒。
+      this.centerIndicator.beginCountDown(30);
     }
   }
 
@@ -1927,6 +1925,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
+      this.centerIndicator.beginCountDown(30);
     }
 
     // 执行碰。
@@ -1983,6 +1982,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
+      this.centerIndicator.beginCountDown(30);
     }
 
     // 执行明杠。
@@ -2015,6 +2015,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
+      this.centerIndicator.beginCountDown(30);
     }
 
     // 执行补杠。
@@ -2059,6 +2060,7 @@ export default class Game extends cc.Component {
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
+      this.centerIndicator.beginCountDown(30);
     }
 
     // 执行暗杠。

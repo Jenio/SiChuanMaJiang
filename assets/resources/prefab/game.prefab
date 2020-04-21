@@ -47248,6 +47248,15 @@
       "__id__": 1
     },
     "_enabled": true,
+    "currInningLabel": {
+      "__id__": 16
+    },
+    "totalInningLabel": {
+      "__id__": 22
+    },
+    "baseScoreLabel": {
+      "__id__": 31
+    },
     "rootNode": {
       "__id__": 2
     },

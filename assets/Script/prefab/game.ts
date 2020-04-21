@@ -250,6 +250,11 @@ export default class Game extends cc.Component {
    */
   private _inningResultNode?: cc.Node;
 
+  /**
+   * 缺牌提示的次数。
+   */
+  private _skipTipTimes = 0;
+
   onLoad() {
     if (this.rootNode) {
       let size = cc.view.getVisibleSize();
@@ -1027,6 +1032,7 @@ export default class Game extends cc.Component {
    * 清理，为下一局做准备。
    */
   private _clearForNextInning() {
+    this._skipTipTimes = 0;
     this._numCardsLeft = 0;
     this._tingInfos.length = 0;
     this._finishInningNotify = undefined;
@@ -1808,6 +1814,16 @@ export default class Game extends cc.Component {
           }
           this.tingNode.active = false;
         }
+      }
+    }
+
+    // 如果是自己打出的牌，且手上还存在定缺的牌，且打出的牌不是定缺的牌，且为前三次，那么提示用户。
+    if (sdir === ScreenDirection.Bottom) {
+      if (this._skipTipTimes < 3 && this.myCardsController && !this.myCardsController.isSkipCard(notify.cardId) && this.myCardsController.existsSkipCard()) {
+        let tips = ['缺一门才能胡牌', '结束时有缺门的牌将被查花猪'];
+        let tip = tips[this._skipTipTimes % tips.length];
+        this._skipTipTimes++;
+        uiTools.toast(tip);
       }
     }
   }

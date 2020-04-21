@@ -454,6 +454,42 @@ export default class MjMyCardsController extends cc.Component {
   }
 
   /**
+   * 判定指定的牌是否为定缺的牌。
+   * @param cardId 牌。
+   */
+  isSkipCard(cardId: CardId): boolean {
+    if (this._skipType === CardType.Wan) {
+      if (cardId >= CardId.Wan1 && cardId <= CardId.Wan9) {
+        return true;
+      }
+    } else if (this._skipType === CardType.Suo) {
+      if (cardId >= CardId.Suo1 && cardId <= CardId.Suo9) {
+        return true;
+      }
+    } else if (this._skipType === CardType.Tong) {
+      if (cardId >= CardId.Tong1 && cardId <= CardId.Tong9) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 判定手上是否存在定缺的牌。
+   */
+  existsSkipCard(): boolean {
+    if (this._skipType !== undefined) {
+      let cardIds = this.getHandCards(true);
+      for (let cardId of cardIds) {
+        if (this.isSkipCard(cardId)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * 从手牌中移除指定的牌，返回是否成功移除。
    * @param cardId 要移除的牌。
    */

@@ -13,6 +13,7 @@ import MjTingUi, { CardTingInfo } from './game/mjTingUi';
 import MjCard from './game/mjCard';
 import { PlayerResultInfo } from '../model/game/other-structs';
 import InningResult from './inningResult';
+import MjSkipOneUi from './game/mjSkipOneUi';
 
 const { ccclass, property } = cc._decorator;
 
@@ -149,10 +150,10 @@ export default class Game extends cc.Component {
   topInfo: MjUser = null;
 
   /**
-   * 定缺UI节点。
+   * 定缺UI。
    */
-  @property(cc.Node)
-  skipOneUiNode: cc.Node = null;
+  @property(MjSkipOneUi)
+  skipOneUi: MjSkipOneUi = null;
 
   /**
    * 单行听UI。
@@ -690,29 +691,6 @@ export default class Game extends cc.Component {
     }
     return true;
   }
-
-  /*
-   * 判定是否制定的牌需要变暗显示（定缺的牌需要变暗）。
-   * @param cardId 牌。
-   */
-  /*
-  private _needDarken(cardId: CardId): boolean {
-    if (this._myQueType === CardType.Wan) {
-      if (cardId >= CardId.Wan1 && cardId <= CardId.Wan9) {
-        return true;
-      }
-    } else if (this._myQueType === CardType.Suo) {
-      if (cardId >= CardId.Suo1 && cardId <= CardId.Suo9) {
-        return true;
-      }
-    } else if (this._myQueType === CardType.Tong) {
-      if (cardId >= CardId.Tong1 && cardId <= CardId.Tong9) {
-        return true;
-      }
-    }
-    return false;
-  }
-  */
 
   /**
    * 生成指定方位的玩家结算数据。
@@ -1326,8 +1304,8 @@ export default class Game extends cc.Component {
 
       // 如果正在等待客户端定缺完成，那么弹出定缺界面。
       if (gi.pendingAction === PendingAction.FinishSkipOne) {
-        if (this.skipOneUiNode) {
-          this.skipOneUiNode.active = true;
+        if (this.skipOneUi) {
+          this.skipOneUi.show();
         }
       }
     } else if (gi.state === 4) {  // 等待牌局结束。
@@ -1627,8 +1605,8 @@ export default class Game extends cc.Component {
 
   private async _onStartSkipOneNotify(notify: StartSkipOneNotify) {
     this._numCardsLeft = 55;
-    if (this.skipOneUiNode) {
-      this.skipOneUiNode.active = true;
+    if (this.skipOneUi) {
+      this.skipOneUi.show();
     }
     if (this.cardWallNode) {
       this.cardWallNode.active = true;
@@ -1640,6 +1618,11 @@ export default class Game extends cc.Component {
 
   private async _onStartPlayNotify(notify: StartPlayNotify) {
     this._numCardsLeft = 55;
+
+    // 隐藏定缺界面。
+    if (this.skipOneUi) {
+      this.skipOneUi.hide();
+    }
 
     // 显示牌墙简要信息。
     if (this.cardWallNode && !this.cardWallNode.active) {
@@ -2311,30 +2294,6 @@ export default class Game extends cc.Component {
         cc.error(err);
       });
     }, 2);
-  }
-
-  /**
-   * 定缺时点击了万。
-   */
-  onSkipWan() {
-    this.skipOneUiNode.active = false;
-    this._sendFinishSkipOne(CardType.Wan);
-  }
-
-  /**
-   * 定缺时点击了锁。
-   */
-  onSkipSuo() {
-    this.skipOneUiNode.active = false;
-    this._sendFinishSkipOne(CardType.Suo);
-  }
-
-  /**
-   * 定缺时点击了筒。
-   */
-  onSkipTong() {
-    this.skipOneUiNode.active = false;
-    this._sendFinishSkipOne(CardType.Tong);
   }
 
   /**

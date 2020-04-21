@@ -1,0 +1,169 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "hu_a",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.8333333333333334,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "paths": {
+      "all": {
+        "props": {
+          "scale": [
+            {
+              "frame": 0,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.453,
+                "y": 1.453
+              }
+            },
+            {
+              "frame": 0.11666666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.24,
+                "y": 1.24
+              }
+            },
+            {
+              "frame": 0.4166666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.453,
+                "y": 1.453
+              }
+            },
+            {
+              "frame": 0.48333333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.55,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.104,
+                "y": 1.104
+              }
+            },
+            {
+              "frame": 0.5833333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ]
+        }
+      },
+      "all/hu_light": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.11666666666666667,
+              "value": 222
+            },
+            {
+              "frame": 0.25,
+              "value": 166
+            },
+            {
+              "frame": 0.4166666666666667,
+              "value": 166
+            },
+            {
+              "frame": 0.5833333333333334,
+              "value": 255
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": 0
+            }
+          ]
+        }
+      },
+      "m1": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.4666666666666667,
+              "value": 0
+            },
+            {
+              "frame": 0.48333333333333334,
+              "value": 255
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.48333333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.643,
+                "y": 0.643
+              }
+            },
+            {
+              "frame": 0.5166666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.89,
+                "y": 0.89
+              }
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ]
+        }
+      },
+      "all/hu_a": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.05,
+              "value": 255
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": 255
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

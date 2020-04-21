@@ -12,6 +12,11 @@ export interface StartDealNotify {
   roomId: string;
 
   /**
+   * 当前对局数（基于0）。
+   */
+  currInning: number;
+
+  /**
    * 庄所在的方位。
    */
   bankerDir: string;

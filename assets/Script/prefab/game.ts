@@ -24,6 +24,24 @@ const { ccclass, property } = cc._decorator;
 export default class Game extends cc.Component {
 
   /**
+   * 当前对局数文本框。
+   */
+  @property(cc.Label)
+  currInningLabel: cc.Label = null;
+
+  /**
+   * 总对局数文本框。
+   */
+  @property(cc.Label)
+  totalInningLabel: cc.Label = null;
+
+  /**
+   * 基准分文本框。
+   */
+  @property(cc.Label)
+  baseScoreLabel: cc.Label = null;
+
+  /**
    * 根节点。
    */
   @property(cc.Node)
@@ -671,6 +689,24 @@ export default class Game extends cc.Component {
   }
 
   /**
+   * 更新对局信息。
+   * @param currInning 当前局数（基于0）。
+   * @param totalInnings 总局数。
+   * @param baseScore 基准分。
+   */
+  private _updateInningInfo(currInning: number, totalInnings: number, baseScore: number) {
+    if (this.currInningLabel) {
+      this.currInningLabel.string = (currInning + 1).toString();
+    }
+    if (this.totalInningLabel) {
+      this.totalInningLabel.string = totalInnings.toString();
+    }
+    if (this.baseScoreLabel) {
+      this.baseScoreLabel.string = baseScore.toString();
+    }
+  }
+
+  /**
    * 判定我是否为首抽，如果我的出牌区中没有牌，且所有的玩家的牌组均为空则我是首抽。
    */
   private _isFirstDraw(): boolean {
@@ -1085,6 +1121,9 @@ export default class Game extends cc.Component {
     this._bankerDir = fromDirChar(gi.banker);
     this._myDir = fromDirChar(gi.mine.dir);
 
+    // 设置对局信息。
+    this._updateInningInfo(gi.currInning, gi.totalInnings, gi.baseScore);
+
     // 记录我的定缺类型。
     if (this.myCardsController) {
       if (gi.mine.skipType === 'wan') {
@@ -1405,6 +1444,11 @@ export default class Game extends cc.Component {
 
     // 清理上局的数据。
     this._clearForNextInning();
+
+    // 更新对局信息。
+    if (this.currInningLabel) {
+      this.currInningLabel.string = (notify.currInning + 1).toString();
+    }
 
     // 确定庄的位置。
     this._bankerDir = fromDirChar(notify.bankerDir);

@@ -484,6 +484,21 @@ export interface GameInfo {
   roomId: string;
 
   /**
+   * 当前局数（基于0）。
+   */
+  currInning: number;
+
+  /**
+   * 总局数。
+   */
+  totalInnings: number;
+
+  /**
+   * 基准分。
+   */
+  baseScore: number;
+
+  /**
    * 状态，取值如下：等待开局就绪（如果是首局，此时不用显示上局结果，如果非首局，那么需要显示上局结果）=1，等待发牌完成=2，等待定缺完成=3，等待牌局结束=4。
    */
   state: number;

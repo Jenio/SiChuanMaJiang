@@ -197,6 +197,7 @@ export default class Game extends cc.Component {
   @property(MjPengGangHuGuoUi)
   pengGangHuGuoUi: MjPengGangHuGuoUi = null;
 
+  private _newClientNotifyHandler = this._onNewClient.bind(this);
   private _queryNotifyHandler = this._onQueryNotify.bind(this);
   private _startDealNotifyHandler = this._onStartDealNotify.bind(this);
   private _startSkipOneNotifyHandler = this._onStartSkipOneNotify.bind(this);
@@ -235,6 +236,11 @@ export default class Game extends cc.Component {
    * 是否接受查询通知。
    */
   private _acceptQueryNotify = false;
+
+  /**
+   * 是否中途断线重连后的查询。
+   */
+  private _queryOnReconnect = false;
 
   /**
    * 听信息集。
@@ -277,6 +283,7 @@ export default class Game extends cc.Component {
       evn.stopPropagation();
       this._enterHall();
     });
+    cache.otherEvent.on('newClient', this._newClientNotifyHandler);
     cache.notifyEvent.on('game/queryNotify', this._queryNotifyHandler);
     cache.notifyEvent.on('game/startDealNotify', this._startDealNotifyHandler);
     cache.notifyEvent.on('game/startSkipOneNotify', this._startSkipOneNotifyHandler);
@@ -295,6 +302,7 @@ export default class Game extends cc.Component {
 
   onDestroy() {
     this._destroyed = true;
+    cache.otherEvent.off('newClient', this._newClientNotifyHandler);
     cache.notifyEvent.off('game/queryNotify', this._queryNotifyHandler);
     cache.notifyEvent.off('game/startDealNotify', this._startDealNotifyHandler);
     cache.notifyEvent.off('game/startSkipOneNotify', this._startSkipOneNotifyHandler);
@@ -1123,6 +1131,14 @@ export default class Game extends cc.Component {
     }
   }
 
+  private _onNewClient() {
+    cc.log('newClient');
+
+    this._acceptQueryNotify = true;
+    this._queryOnReconnect = true;
+    this._sendQueryGame();
+  }
+
   private _onQueryNotify(gi: GameInfo) {
     cc.log('queryNotify');
     cc.log(gi);
@@ -1131,6 +1147,13 @@ export default class Game extends cc.Component {
       return;
     }
     this._acceptQueryNotify = false;
+
+    // 断线自动重连成功后需要先清除牌桌数据。
+    if (this._queryOnReconnect) {
+      this._queryOnReconnect = false;
+      uiTools.toast('已重新连上服务器');
+      this._clearForNextInning();
+    }
 
     // 每秒一次保活。
     if (!this._keepAliveRunning) {

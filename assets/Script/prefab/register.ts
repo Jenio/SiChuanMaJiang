@@ -38,7 +38,8 @@ export default class Register extends cc.Component {
     // 获取主机、端口。
     let host: string | undefined = cc.sys.localStorage.getItem('host');
     if (!host) {
-      host = '127.0.0.1';
+      //host = '127.0.0.1';
+      host = '39.101.164.203'
       cc.sys.localStorage.setItem('host', host);
     }
     let port: string | undefined = cc.sys.localStorage.getItem('port');

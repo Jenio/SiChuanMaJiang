@@ -99,7 +99,8 @@ export default class Login extends cc.Component {
     // 获取主机、端口。
     let host: string | undefined = cc.sys.localStorage.getItem('host');
     if (!host) {
-      host = '10.30.1.254';
+      //host = '10.30.1.254';
+      host = '39.101.164.203';
       cc.sys.localStorage.setItem('host', host);
     }
     let port: string | undefined = cc.sys.localStorage.getItem('port');
@@ -155,6 +156,7 @@ export default class Login extends cc.Component {
       cmd.bindUnknown((notify, data) => {
         cache.notifyEvent.emit(notify, data);
       });
+      cache.otherEvent.emit('newClient');
       cache.cmd = cmd;
     };
     initCache(cmd);

@@ -12,9 +12,14 @@ namespace cache {
   export let cmd: CmdClient | undefined;
 
   /**
-   * 通知事件。
+   * 网络通知事件。
    */
   export let notifyEvent = new cc.EventTarget();
+
+  /**
+   * 其他事件。
+   */
+  export let otherEvent = new cc.EventTarget();
 
   /**
    * 所在的房间（每当进入房间时设置，或上线后发现在房间内则设置，离开房间或销毁房间时并不重置为空串）。

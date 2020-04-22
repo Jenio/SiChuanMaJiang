@@ -10,6 +10,12 @@ const { ccclass, property } = cc._decorator;
 export default class MjCard extends cc.Component {
 
   /**
+   * 胡动画。
+   */
+  @property(cc.Animation)
+  huAnim: cc.Animation = null;
+
+  /**
    * 牌花精灵。
    */
   @property(cc.Sprite)
@@ -90,6 +96,9 @@ export default class MjCard extends cc.Component {
     if (this.darkenNode) {
       this.darkenNode.active = !!darken;
     }
+    if (this.huAnim) {
+      this.huAnim.node.active = false;
+    }
   }
 
   /**
@@ -158,6 +167,20 @@ export default class MjCard extends cc.Component {
         }
       }
       this.indicatorNode.active = false;
+    }
+  }
+
+  /**
+   * 播放胡特效。
+   */
+  playHuEffect() {
+    if (this.huAnim) {
+      this.huAnim.node.active = true;
+      this.huAnim.once('stop', (evn) => {
+        this.huAnim.node.active = false;
+      });
+      let state = this.huAnim.play();
+      state.repeatCount = 1;
     }
   }
 }

@@ -40,10 +40,12 @@ export default class MjDiscardArea extends cc.Component {
 
   /**
    * 添加牌。
+   * @param refNode 参考节点（移动动画在此节点中播放）。
+   * @param pos 运动的起始位置。
    * @param cardId 牌。
    * @param showIndicator 是否顺便显示指示器。
    */
-  addCard(cardId: CardId, showIndicator: boolean) {
+  addCard(refNode: cc.Node | undefined, pos: cc.Vec3 | undefined, cardId: CardId, showIndicator: boolean) {
     if (this.cardPrefab) {
       let lineNode = this.firstLineNode;
       if (lineNode && lineNode.childrenCount >= 9) {
@@ -63,6 +65,49 @@ export default class MjDiscardArea extends cc.Component {
           lineNode.insertChild(node, 0);
         } else {
           lineNode.addChild(node);
+        }
+
+        // 移动。
+        if (refNode && pos) {
+
+          // 先隐藏目标节点，当移动到那个地方时才显示出来。
+          node.opacity = 0;
+
+          // 创建运动节点。
+          let movingNode = cc.instantiate(this.cardPrefab);
+          let c2 = movingNode.getComponent(MjCard);
+          if (c2) {
+            c2.setup(cardId);
+          }
+          refNode.addChild(movingNode);
+          let offsetX = 0;
+          let offsetY = 0;
+          if (movingNode.anchorX === 0) {
+            offsetX = -movingNode.width / 2;
+          } else if (movingNode.anchorX === 1) {
+            offsetX = movingNode.width / 2;
+          }
+          if (movingNode.anchorY === 0) {
+            offsetY = -movingNode.height / 2;
+          } else if (movingNode.anchorY === 1) {
+            offsetY = movingNode.height / 2;
+          }
+          movingNode.x = pos.x + offsetX;
+          movingNode.y = pos.y + offsetY;
+
+          // 下一帧才开始播放。
+          this.scheduleOnce(() => {
+            //cc.log(`new discard card at: ${node.position}`);
+            let worldPos = node.convertToWorldSpaceAR(new cc.Vec3(0, 0, 0));
+            //cc.log(`worldPos is: ${worldPos}`);
+            let targetPos = refNode.convertToNodeSpaceAR(worldPos);
+            //cc.log(`targetPos is: ${targetPos}`);
+            let action = cc.sequence(cc.moveTo(0.2, targetPos.x, targetPos.y), cc.callFunc(() => {
+              node.opacity = 255;
+              movingNode.removeFromParent(true);
+            }));
+            movingNode.runAction(action);
+          });
         }
       }
     }

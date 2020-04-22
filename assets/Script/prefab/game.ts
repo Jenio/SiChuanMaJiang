@@ -138,6 +138,30 @@ export default class Game extends cc.Component {
   rightHuCard: MjCard = null;
 
   /**
+   * 我胡的特效。
+   */
+  @property(cc.Animation)
+  myHuAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家胡的特效。
+   */
+  @property(cc.Animation)
+  topHuAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家胡的特效。
+   */
+  @property(cc.Animation)
+  leftHuAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家胡的特效。
+   */
+  @property(cc.Animation)
+  rightHuAnim: cc.Animation = null;
+
+  /**
    * 听按钮节点。
    */
   @property(cc.Node)
@@ -394,42 +418,6 @@ export default class Game extends cc.Component {
     try {
       var res = await cache.cmd.execCmd(`${cache.route}:game/finishDeal`, {
         roomId: cache.roomId
-      });
-    } catch (err) {
-      cc.error(err);
-      uiTools.toast('请求失败');
-      return;
-    }
-    if (res.err !== undefined) {
-      if (res.err === 2 || res.err === 3) {
-        cc.warn(`res.err is: ${res.err}`);
-        uiTools.toast('游戏已结束');
-        await this._enterHall();
-      } else if (res.err === 4 || res.err === 5) {
-      } else {
-        cc.warn(`res.err is: ${res.err}`);
-      }
-    }
-  }
-
-  /**
-   * 发送定缺完成。
-   * @param type 卡牌类型。
-   */
-  private async _sendFinishSkipOne(type: CardType) {
-    if (type === CardType.Wan) {
-      var skipType = 'wan';
-    } else if (type === CardType.Suo) {
-      var skipType = 'suo';
-    } else if (type === CardType.Tong) {
-      var skipType = 'tong';
-    } else {
-      throw new Error(`unknown card type ${type}`);
-    }
-    try {
-      var res = await cache.cmd.execCmd(`${cache.route}:game/finishSkipOne`, {
-        roomId: cache.roomId,
-        skipType
       });
     } catch (err) {
       cc.error(err);
@@ -1045,6 +1033,36 @@ export default class Game extends cc.Component {
   }
 
   /**
+   * 播放胡的特效。
+   * @param sdir 屏幕方位。
+   */
+  private _playHuEffect(sdir: ScreenDirection) {
+    let huAnim: cc.Animation | undefined;
+    switch (sdir) {
+      case ScreenDirection.Bottom:
+        huAnim = this.myHuAnim;
+        break;
+      case ScreenDirection.Top:
+        huAnim = this.topHuAnim;
+        break;
+      case ScreenDirection.Left:
+        huAnim = this.leftHuAnim;
+        break;
+      case ScreenDirection.Right:
+        huAnim = this.rightHuAnim;
+        break;
+    }
+    if (huAnim) {
+      huAnim.node.active = true;
+      huAnim.once('stop', (evn) => {
+        huAnim.node.active = false;
+      });
+      let state = huAnim.play();
+      state.repeatCount = 1;
+    }
+  }
+
+  /**
    * 清理，为下一局做准备。
    */
   private _clearForNextInning() {
@@ -1070,6 +1088,18 @@ export default class Game extends cc.Component {
     }
     if (this.rightHuCard) {
       this.rightHuCard.node.active = false;
+    }
+    if (this.myHuAnim) {
+      this.myHuAnim.node.active = false;
+    }
+    if (this.topHuAnim) {
+      this.topHuAnim.node.active = false;
+    }
+    if (this.leftHuAnim) {
+      this.leftHuAnim.node.active = false;
+    }
+    if (this.rightHuAnim) {
+      this.rightHuAnim.node.active = false;
     }
 
     // 手牌清理。
@@ -1315,22 +1345,22 @@ export default class Game extends cc.Component {
       let southArea = this._getDiscardArea(Direction.South);
       if (eastArea) {
         for (let cardId of gi.discardArea.east) {
-          eastArea.addCard(cardId, false);
+          eastArea.addCard(undefined, undefined, cardId, false);
         }
       }
       if (northArea) {
         for (let cardId of gi.discardArea.north) {
-          northArea.addCard(cardId, false);
+          northArea.addCard(undefined, undefined, cardId, false);
         }
       }
       if (westArea) {
         for (let cardId of gi.discardArea.west) {
-          westArea.addCard(cardId, false);
+          westArea.addCard(undefined, undefined, cardId, false);
         }
       }
       if (southArea) {
         for (let cardId of gi.discardArea.south) {
-          southArea.addCard(cardId, false);
+          southArea.addCard(undefined, undefined, cardId, false);
         }
       }
 
@@ -1792,34 +1822,35 @@ export default class Game extends cc.Component {
     // 打出一张牌，并将牌添加到相应的出牌区。
     if (sdir === ScreenDirection.Bottom) {
       if (this.myCardsController) {
-        if (!this.myCardsController.finishDiscard()) {
+        var pos = this.myCardsController.finishDiscard(this.node);
+        if (pos === undefined) {
           cc.log('_onDiscardNotify enter code 1');
           //TODO 有可能我在出牌期间掉线了，重新上线时由于丢失了上次的状态（选牌状态）无法完成出牌，因此需要随便打出一张同名牌。
         }
       }
       if (this.myDiscardArea) {
-        this.myDiscardArea.addCard(notify.cardId, true);
+        this.myDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Top) {
       if (this.topCardsController) {
         this.topCardsController.removeHandCard();
       }
       if (this.topDiscardArea) {
-        this.topDiscardArea.addCard(notify.cardId, true);
+        this.topDiscardArea.addCard(undefined, undefined, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Left) {
       if (this.leftCardsController) {
         this.leftCardsController.removeHandCard();
       }
       if (this.leftDiscardArea) {
-        this.leftDiscardArea.addCard(notify.cardId, true);
+        this.leftDiscardArea.addCard(undefined, undefined, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Right) {
       if (this.rightCardsController) {
         this.rightCardsController.removeHandCard();
       }
       if (this.rightDiscardArea) {
-        this.rightDiscardArea.addCard(notify.cardId, true);
+        this.rightDiscardArea.addCard(undefined, undefined, notify.cardId, true);
       }
     }
 
@@ -2243,23 +2274,28 @@ export default class Game extends cc.Component {
         if (this.myHuCard) {
           this.myHuCard.node.active = true;
           this.myHuCard.setup(notify.eastHu);
+          this.myHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Top) {
         if (this.topHuCard) {
           this.topHuCard.node.active = true;
           this.topHuCard.setup(notify.eastHu);
+          this.topHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Left) {
         if (this.leftHuCard) {
           this.leftHuCard.node.active = true;
           this.leftHuCard.setup(notify.eastHu);
+          this.leftHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Right) {
         if (this.rightHuCard) {
           this.rightHuCard.node.active = true;
           this.rightHuCard.setup(notify.eastHu);
+          this.rightHuCard.playHuEffect();
         }
       }
+      this._playHuEffect(sdir);
     }
     if (notify.northHu !== undefined) {
       let sdir = this._toScreenDir(Direction.North);
@@ -2267,23 +2303,28 @@ export default class Game extends cc.Component {
         if (this.myHuCard) {
           this.myHuCard.node.active = true;
           this.myHuCard.setup(notify.northHu);
+          this.myHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Top) {
         if (this.topHuCard) {
           this.topHuCard.node.active = true;
           this.topHuCard.setup(notify.northHu);
+          this.topHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Left) {
         if (this.leftHuCard) {
           this.leftHuCard.node.active = true;
           this.leftHuCard.setup(notify.northHu);
+          this.leftHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Right) {
         if (this.rightHuCard) {
           this.rightHuCard.node.active = true;
           this.rightHuCard.setup(notify.northHu);
+          this.rightHuCard.playHuEffect();
         }
       }
+      this._playHuEffect(sdir);
     }
     if (notify.westHu !== undefined) {
       let sdir = this._toScreenDir(Direction.West);
@@ -2291,23 +2332,28 @@ export default class Game extends cc.Component {
         if (this.myHuCard) {
           this.myHuCard.node.active = true;
           this.myHuCard.setup(notify.westHu);
+          this.myHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Top) {
         if (this.topHuCard) {
           this.topHuCard.node.active = true;
           this.topHuCard.setup(notify.westHu);
+          this.topHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Left) {
         if (this.leftHuCard) {
           this.leftHuCard.node.active = true;
           this.leftHuCard.setup(notify.westHu);
+          this.leftHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Right) {
         if (this.rightHuCard) {
           this.rightHuCard.node.active = true;
           this.rightHuCard.setup(notify.westHu);
+          this.rightHuCard.playHuEffect();
         }
       }
+      this._playHuEffect(sdir);
     }
     if (notify.southHu !== undefined) {
       let sdir = this._toScreenDir(Direction.South);
@@ -2315,23 +2361,28 @@ export default class Game extends cc.Component {
         if (this.myHuCard) {
           this.myHuCard.node.active = true;
           this.myHuCard.setup(notify.southHu);
+          this.myHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Top) {
         if (this.topHuCard) {
           this.topHuCard.node.active = true;
           this.topHuCard.setup(notify.southHu);
+          this.topHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Left) {
         if (this.leftHuCard) {
           this.leftHuCard.node.active = true;
           this.leftHuCard.setup(notify.southHu);
+          this.leftHuCard.playHuEffect();
         }
       } else if (sdir === ScreenDirection.Right) {
         if (this.rightHuCard) {
           this.rightHuCard.node.active = true;
           this.rightHuCard.setup(notify.southHu);
+          this.rightHuCard.playHuEffect();
         }
       }
+      this._playHuEffect(sdir);
     }
 
     // 抢杠胡时需要将对方的杠替换为碰。

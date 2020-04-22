@@ -1049,11 +1049,12 @@ export default class MjMyCardsController extends cc.Component {
   }
 
   /**
-   * 完成出牌，返回是否成功。
+   * 完成出牌。
+   * @param node 参考节点（返回的坐标相对于此节点）。
    */
-  finishDiscard(): boolean {
+  finishDiscard(node: cc.Node): cc.Vec3 | undefined {
     if (!this._discarding) {
-      return false;
+      return undefined;
     }
     this._discarding = false;
     this._enableDiscard = false;
@@ -1062,12 +1063,45 @@ export default class MjMyCardsController extends cc.Component {
 
     // 优先尝试移除抽牌。
     if (card === this.drawCard) {
+
+      // 根据锚点的不同，计算中心的坐标（本地坐标）。
+      let fromX = 0;
+      let fromY = 0;
+      if (card.node.anchorX === 0) {
+        fromX = card.node.width / 2;
+      } else if (card.node.anchorX === 1) {
+        fromX = -card.node.width / 2;
+      }
+      if (card.node.anchorY === 0) {
+        fromY = card.node.height / 2;
+      } else if (card.node.anchorY === 1) {
+        fromY = -card.node.height / 2;
+      }
+
+      // 向上偏移半个牌的高度。
+      fromY += card.node.height / 2;
+
+      let worldPos = card.node.convertToWorldSpaceAR(cc.v3(fromX, fromY, 0));
       card.node.y = this._selCardY;
       this.removeDrawCard();
-      return true;
+      return node.convertToNodeSpaceAR(worldPos);
     }
 
     // 从手牌中移除。
+    let fromX = 0;
+    let fromY = 0;
+    if (card.node.anchorX === 0) {
+      fromX = card.node.width / 2;
+    } else if (card.node.anchorX === 1) {
+      fromX = -card.node.width / 2;
+    }
+    if (card.node.anchorY === 0) {
+      fromY = card.node.width / 2;
+    } else if (card.node.anchorY === 1) {
+      fromY = -card.node.width / 2;
+    }
+    let worldPos = card.node.convertToWorldSpaceAR(cc.v3(fromX, fromY, 0));
+    let pos = node.convertToNodeSpaceAR(worldPos);
     card.node.removeFromParent(true);
 
     // 如果有抽牌（当自己碰的时候是不会有抽牌的），那么应该将抽牌移动到手牌中。
@@ -1076,6 +1110,6 @@ export default class MjMyCardsController extends cc.Component {
       this.removeDrawCard();
     }
 
-    return true;
+    return pos;
   }
 }

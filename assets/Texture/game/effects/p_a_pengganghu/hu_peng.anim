@@ -1,6 +1,6 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "hu_a",
+  "_name": "hu_peng",
   "_objFlags": 0,
   "_native": "",
   "_duration": 1.3333333333333333,
@@ -16,24 +16,24 @@
               "frame": 0,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 2.119,
-                "y": 2.119
+                "x": 2.294,
+                "y": 2.294
               }
             },
             {
               "frame": 0.11666666666666667,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 1.979,
-                "y": 1.979
+                "x": 2.107,
+                "y": 2.107
               }
             },
             {
               "frame": 0.4166666666666667,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 2.119,
-                "y": 2.119
+                "x": 2.294,
+                "y": 2.294
               }
             },
             {
@@ -63,7 +63,25 @@
           ]
         }
       },
-      "all/hu_light": {
+      "all/zi_peng": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.05,
+              "value": 255
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": 255
+            }
+          ]
+        }
+      },
+      "all/peng_light": {
         "props": {
           "opacity": [
             {
@@ -93,7 +111,7 @@
           ]
         }
       },
-      "m1": {
+      "m2": {
         "props": {
           "opacity": [
             {
@@ -141,24 +159,6 @@
                 "x": 1,
                 "y": 1
               }
-            }
-          ]
-        }
-      },
-      "all/hu_a": {
-        "props": {
-          "opacity": [
-            {
-              "frame": 0,
-              "value": 0
-            },
-            {
-              "frame": 0.05,
-              "value": 255
-            },
-            {
-              "frame": 0.8333333333333334,
-              "value": 255
             }
           ]
         }

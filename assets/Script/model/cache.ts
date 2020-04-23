@@ -1,6 +1,9 @@
 import { CmdClient } from './network/cmd';
 
 namespace cache {
+  export let localServerIp = '10.30.1.254';
+  export let testServerIp = '39.101.164.203';
+
   /**
    * 游戏ID。
    */

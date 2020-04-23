@@ -346,6 +346,7 @@ export default class Game extends cc.Component {
    * 进入大厅。
    */
   private async _enterHall() {
+    //TODO 关闭所有当前弹出的窗口（例如对局结果、对局流水）。
     try {
       await uiTools.openWindow('prefab/hall');
     } catch (err) {
@@ -2489,6 +2490,10 @@ export default class Game extends cc.Component {
    * 点击记录按钮的处理。
    */
   onClickRecord() {
+    uiTools.openWindow('prefab/inningScore').catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开窗口失败');
+    });
   }
 
   /**

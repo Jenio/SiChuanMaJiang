@@ -550,18 +550,8 @@ export default class MjMyCardsController extends cc.Component {
   calcShowOptionOnDiscard(cardId: CardId, cardsLeft: number): ShowOption | undefined {
 
     // 如果出的牌是我定缺的牌，那么不可能需要弹出UI。
-    if (this._skipType === CardType.Tong) {
-      if (cardId >= CardId.Tong1 && cardId <= CardId.Tong9) {
-        return undefined;
-      }
-    } else if (this._skipType === CardType.Suo) {
-      if (cardId >= CardId.Suo1 && cardId <= CardId.Suo9) {
-        return undefined;
-      }
-    } else if (this._skipType === CardType.Wan) {
-      if (cardId >= CardId.Wan1 && cardId <= CardId.Wan9) {
-        return undefined;
-      }
+    if (this.isSkipCard(cardId)) {
+      return undefined;
     }
 
     // 准备。
@@ -594,10 +584,12 @@ export default class MjMyCardsController extends cc.Component {
     }
 
     // 检测是否有点炮胡。
-    cards.push(cardId);
-    if (checkHuForm(false, false, cards, cardGroups) !== undefined) {
-      option.huType = HuType.DianPao;
-      cc.log(cards);
+    if (!this.existsSkipCard()) {
+      cards.push(cardId);
+      if (checkHuForm(false, false, cards, cardGroups) !== undefined) {
+        option.huType = HuType.DianPao;
+        cc.log(cards);
+      }
     }
 
     // 如果没有碰、杠也没有胡，那么不需要显示。
@@ -615,32 +607,24 @@ export default class MjMyCardsController extends cc.Component {
   calcShowOptionOnBuGang(cardId: CardId): ShowOption | undefined {
 
     // 如果补杠的牌是我定缺的牌，那么不可能需要弹出UI。
-    if (this._skipType === CardType.Tong) {
-      if (cardId >= CardId.Tong1 && cardId <= CardId.Tong9) {
-        return undefined;
-      }
-    } else if (this._skipType === CardType.Suo) {
-      if (cardId >= CardId.Suo1 && cardId <= CardId.Suo9) {
-        return undefined;
-      }
-    } else if (this._skipType === CardType.Wan) {
-      if (cardId >= CardId.Wan1 && cardId <= CardId.Wan9) {
-        return undefined;
-      }
+    if (this.isSkipCard(cardId)) {
+      return undefined;
     }
 
-    // 准备。
-    let option: ShowOption = {
-      peng: false,
-      gang: [],
-      huType: HuType.None,
-      sendPass: true
-    };
-    let cardGroups = this.getCardGroups();
-    let cards = this.getHandCards(false);
-    if (checkHuForm(false, false, cards, cardGroups) !== undefined) {
-      option.huType = HuType.QiangGang;
-      return option;
+    // 检测胡。
+    if (!this.existsSkipCard()) {
+      let option: ShowOption = {
+        peng: false,
+        gang: [],
+        huType: HuType.None,
+        sendPass: true
+      };
+      let cardGroups = this.getCardGroups();
+      let cards = this.getHandCards(false);
+      if (checkHuForm(false, false, cards, cardGroups) !== undefined) {
+        option.huType = HuType.QiangGang;
+        return option;
+      }
     }
 
     return undefined;
@@ -671,18 +655,8 @@ export default class MjMyCardsController extends cc.Component {
       // 统计所有非定缺手牌的数量。
       let cardCount: { [card: number]: number } = {};
       for (let c of cards) {
-        if (this._skipType === CardType.Tong) {
-          if (c >= CardId.Tong1 && c <= CardId.Tong9) {
-            continue;
-          }
-        } else if (this._skipType === CardType.Suo) {
-          if (c >= CardId.Suo1 && c <= CardId.Suo9) {
-            continue;
-          }
-        } else if (this._skipType === CardType.Wan) {
-          if (c >= CardId.Wan1 && c <= CardId.Wan9) {
-            continue;
-          }
+        if (this.isSkipCard(c)) {
+          continue;
         }
         let count = cardCount[c];
         if (count === undefined) {
@@ -732,21 +706,9 @@ export default class MjMyCardsController extends cc.Component {
     // 检测是否有自摸胡，首先手牌和抽牌中不能存在定缺的牌才有可能胡。
     let enableHu = true;
     for (let c of cards) {
-      if (this._skipType === CardType.Tong) {
-        if (c >= CardId.Tong1 && c <= CardId.Tong9) {
-          enableHu = false;
-          break;
-        }
-      } else if (this._skipType === CardType.Suo) {
-        if (c >= CardId.Suo1 && c <= CardId.Suo9) {
-          enableHu = false;
-          break;
-        }
-      } else if (this._skipType === CardType.Wan) {
-        if (c >= CardId.Wan1 && c <= CardId.Wan9) {
-          enableHu = false;
-          break;
-        }
+      if (this.isSkipCard(c)) {
+        enableHu = false;
+        break;
       }
     }
     if (enableHu && checkHuForm(false, false, cards, cardGroups) !== undefined) {
@@ -772,23 +734,9 @@ export default class MjMyCardsController extends cc.Component {
 
     // 手牌中存在缺牌类型的牌则不可能听。
     let cards = this.getHandCards(false);
-    if (this._skipType === CardType.Wan) {
-      for (let id of cards) {
-        if (id >= CardId.Wan1 && id <= CardId.Wan9) {
-          return tingInfos;
-        }
-      }
-    } else if (this._skipType === CardType.Suo) {
-      for (let id of cards) {
-        if (id >= CardId.Suo1 && id <= CardId.Suo9) {
-          return tingInfos;
-        }
-      }
-    } else if (this._skipType === CardType.Tong) {
-      for (let id of cards) {
-        if (id >= CardId.Tong1 && id <= CardId.Tong9) {
-          return tingInfos;
-        }
+    for (let c of cards) {
+      if (this.isSkipCard(c)) {
+        return tingInfos;
       }
     }
 

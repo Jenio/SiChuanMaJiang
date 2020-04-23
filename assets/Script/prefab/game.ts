@@ -1189,7 +1189,13 @@ export default class Game extends cc.Component {
     if (!this._keepAliveRunning) {
       this._keepAliveRunning = true;
       this.schedule(() => {
-        cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).catch((err) => {
+        cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
+          if (res.err !== undefined) {
+            if (res.err === 2 || res.err === 3) {
+              this._enterHall();
+            }
+          }
+        }).catch((err) => {
           cc.error(err);
         });
       }, 1, cc.macro.REPEAT_FOREVER);
@@ -2220,6 +2226,12 @@ export default class Game extends cc.Component {
 
     // 记录消息，以便结算界面弹出时使用。
     this._finishInningNotify = notify;
+
+    // 关闭听的显示。
+    this._tingInfos.length = 0;
+    if (this.tingNode && this.tingNode.active) {
+      this.tingNode.active = false;
+    }
 
     // 删除其他三家的手牌暗牌，替换为手牌明牌（显示区域不变）。
     let list = [

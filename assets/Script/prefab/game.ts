@@ -1839,21 +1839,21 @@ export default class Game extends cc.Component {
       }
     } else if (sdir === ScreenDirection.Top) {
       if (this.topCardsController) {
-        var pos = this.topCardsController.finishDiscard(this.node);
+        var pos = this.topCardsController.finishDiscard(this.node, sdir);
       }
       if (this.topDiscardArea) {
         this.topDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Left) {
       if (this.leftCardsController) {
-        var pos = this.leftCardsController.finishDiscard(this.node);
+        var pos = this.leftCardsController.finishDiscard(this.node, sdir);
       }
       if (this.leftDiscardArea) {
         this.leftDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Right) {
       if (this.rightCardsController) {
-        var pos = this.rightCardsController.finishDiscard(this.node);
+        var pos = this.rightCardsController.finishDiscard(this.node, sdir);
       }
       if (this.rightDiscardArea) {
         this.rightDiscardArea.addCard(this.node, pos, notify.cardId, true);

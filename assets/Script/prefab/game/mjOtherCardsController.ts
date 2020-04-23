@@ -1,4 +1,4 @@
-import { CardId, Direction, CardGroupType, fromDirChar, CardGroup } from '../../model/game/concept';
+import { CardId, Direction, CardGroupType, fromDirChar, CardGroup, ScreenDirection } from '../../model/game/concept';
 import MjCardGroup from './mjCardGroup';
 import { CardGroupData } from '../../model/game/msgs/game-info';
 import MjCard from './mjCard';
@@ -420,5 +420,46 @@ export default class MjOtherCardsController extends cc.Component {
     if (!this.removeHandCard()) {
       cc.warn('no card');
     }
+  }
+
+  /**
+   * 完成出牌。
+   * @param node 参考节点（返回的坐标相对于此节点）。
+   * @param sdir 出牌者的屏幕方位。
+   */
+  finishDiscard(node: cc.Node, sdir: ScreenDirection): cc.Vec3 | undefined {
+    if (!this.handCardsNode && this.handCardsNode.childrenCount > 0) {
+      return undefined;
+    }
+
+    // 随机取一个节点。
+    let idx = Math.floor(Math.random() * this.handCardsNode.childrenCount);
+    let childNode = this.handCardsNode.children[idx];
+    let fromX = 0;
+    let fromY = 0;
+    if (childNode.anchorX === 0) {
+      fromX = childNode.width / 2;
+    } else if (childNode.anchorX === 1) {
+      fromX = -childNode.width / 2;
+    }
+    if (childNode.anchorY === 0) {
+      fromY = childNode.height / 2;
+    } else if (childNode.anchorY === 1) {
+      fromY = -childNode.height / 2;
+    }
+    if (sdir === ScreenDirection.Top) {
+      fromY -= childNode.height;
+    } else if (sdir === ScreenDirection.Left) {
+      fromX += childNode.width;
+    } else if (sdir === ScreenDirection.Right) {
+      fromX -= childNode.width;
+    }
+    let worldPos = childNode.convertToWorldSpaceAR(cc.v3(fromX, fromY, 0));
+    let pos = node.convertToNodeSpaceAR(worldPos);
+
+    if (!this.removeHandCard()) {
+      return undefined;
+    }
+    return pos;
   }
 }

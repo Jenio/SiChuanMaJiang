@@ -1839,24 +1839,24 @@ export default class Game extends cc.Component {
       }
     } else if (sdir === ScreenDirection.Top) {
       if (this.topCardsController) {
-        this.topCardsController.removeHandCard();
+        var pos = this.topCardsController.finishDiscard(this.node);
       }
       if (this.topDiscardArea) {
-        this.topDiscardArea.addCard(undefined, undefined, notify.cardId, true);
+        this.topDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Left) {
       if (this.leftCardsController) {
-        this.leftCardsController.removeHandCard();
+        var pos = this.leftCardsController.finishDiscard(this.node);
       }
       if (this.leftDiscardArea) {
-        this.leftDiscardArea.addCard(undefined, undefined, notify.cardId, true);
+        this.leftDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     } else if (sdir === ScreenDirection.Right) {
       if (this.rightCardsController) {
-        this.rightCardsController.removeHandCard();
+        var pos = this.rightCardsController.finishDiscard(this.node);
       }
       if (this.rightDiscardArea) {
-        this.rightDiscardArea.addCard(undefined, undefined, notify.cardId, true);
+        this.rightDiscardArea.addCard(this.node, pos, notify.cardId, true);
       }
     }
 

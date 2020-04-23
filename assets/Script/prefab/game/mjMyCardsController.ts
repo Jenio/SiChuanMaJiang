@@ -1044,9 +1044,9 @@ export default class MjMyCardsController extends cc.Component {
       fromX = -card.node.width / 2;
     }
     if (card.node.anchorY === 0) {
-      fromY = card.node.width / 2;
+      fromY = card.node.height / 2;
     } else if (card.node.anchorY === 1) {
-      fromY = -card.node.width / 2;
+      fromY = -card.node.height / 2;
     }
     let worldPos = card.node.convertToWorldSpaceAR(cc.v3(fromX, fromY, 0));
     let pos = node.convertToNodeSpaceAR(worldPos);

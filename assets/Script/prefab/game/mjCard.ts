@@ -135,21 +135,26 @@ export default class MjCard extends cc.Component {
   showIndicator() {
     if (this.indicatorNode) {
       this.indicatorNode.active = true;
-      if (this.indicatorMoveAlongYAxis) {
-        this._indicatorYOrX = this.indicatorNode.y;
+      let c = this.indicatorNode.getComponent(cc.Animation);
+      if (c) {
+        c.play();
       } else {
-        this._indicatorYOrX = this.indicatorNode.x;
+        if (this.indicatorMoveAlongYAxis) {
+          this._indicatorYOrX = this.indicatorNode.y;
+        } else {
+          this._indicatorYOrX = this.indicatorNode.x;
+        }
+        let dis = 20;
+        if (!this.indicatorMovePositive) {
+          dis = -dis;
+        }
+        if (this.indicatorMoveAlongYAxis) {
+          var bounce = cc.sequence(cc.moveBy(0.5, 0, dis).easing(cc.easeSineOut()), cc.moveBy(0.5, 0, -dis).easing(cc.easeSineIn()));
+        } else {
+          var bounce = cc.sequence(cc.moveBy(0.5, dis, 0).easing(cc.easeSineOut()), cc.moveBy(0.5, -dis, 0).easing(cc.easeSineIn()));
+        }
+        this.indicatorNode.runAction(cc.repeatForever(bounce));
       }
-      let dis = 20;
-      if (!this.indicatorMovePositive) {
-        dis = -dis;
-      }
-      if (this.indicatorMoveAlongYAxis) {
-        var bounce = cc.sequence(cc.moveBy(0.5, 0, dis).easing(cc.easeSineOut()), cc.moveBy(0.5, 0, -dis).easing(cc.easeSineIn()));
-      } else {
-        var bounce = cc.sequence(cc.moveBy(0.5, dis, 0).easing(cc.easeSineOut()), cc.moveBy(0.5, -dis, 0).easing(cc.easeSineIn()));
-      }
-      this.indicatorNode.runAction(cc.repeatForever(bounce));
     }
   }
 
@@ -158,12 +163,17 @@ export default class MjCard extends cc.Component {
    */
   hideIndicator() {
     if (this.indicatorNode) {
-      this.indicatorNode.stopAllActions();
-      if (this._indicatorYOrX !== undefined) {
-        if (this.indicatorMoveAlongYAxis) {
-          this.indicatorNode.y = this._indicatorYOrX;
-        } else {
-          this.indicatorNode.x = this._indicatorYOrX;
+      let c = this.indicatorNode.getComponent(cc.Animation);
+      if (c) {
+        c.stop();
+      } else {
+        this.indicatorNode.stopAllActions();
+        if (this._indicatorYOrX !== undefined) {
+          if (this.indicatorMoveAlongYAxis) {
+            this.indicatorNode.y = this._indicatorYOrX;
+          } else {
+            this.indicatorNode.x = this._indicatorYOrX;
+          }
         }
       }
       this.indicatorNode.active = false;

@@ -14,6 +14,7 @@ import MjCard from './game/mjCard';
 import { PlayerResultInfo } from '../model/game/other-structs';
 import InningResult from './inningResult';
 import MjSkipOneUi from './game/mjSkipOneUi';
+import InningScore from './inningScore';
 
 const { ccclass, property } = cc._decorator;
 
@@ -40,12 +41,6 @@ export default class Game extends cc.Component {
    */
   @property(cc.Label)
   baseScoreLabel: cc.Label = null;
-
-  /**
-   * 根节点。
-   */
-  @property(cc.Node)
-  rootNode: cc.Node = null;
 
   /**
    * 我的出牌区域。
@@ -292,17 +287,6 @@ export default class Game extends cc.Component {
   private _keepAliveRunning = false;
 
   onLoad() {
-    if (this.rootNode) {
-      let size = cc.view.getVisibleSize();
-      cc.log(size);
-      if (size.height < 1280) {
-        if (size.height < 630) {
-          this.rootNode.height = 630;
-        } else {
-          this.rootNode.height = size.height;
-        }
-      }
-    }
     this.node.on('notFoundRoom', (evn: cc.Event) => {
       evn.stopPropagation();
       this._enterHall();
@@ -2490,7 +2474,44 @@ export default class Game extends cc.Component {
    * 点击记录按钮的处理。
    */
   onClickRecord() {
-    uiTools.openWindow('prefab/inningScore').catch((err) => {
+    uiTools.openWindow('prefab/inningScore').then((node) => {
+      let c = node.getComponent(InningScore);
+      if (c) {
+        let eastUserInfo = this._getPlayerInfo(Direction.East);
+        let northUserInfo = this._getPlayerInfo(Direction.North);
+        let westUserInfo = this._getPlayerInfo(Direction.West);
+        let southUserInfo = this._getPlayerInfo(Direction.South);
+        if (eastUserInfo) {
+          var eastName = eastUserInfo.userName;
+          var eastIcon = eastUserInfo.userIcon;
+        } else {
+          var eastName = '';
+          var eastIcon = '';
+        }
+        if (northUserInfo) {
+          var northName = northUserInfo.userName;
+          var northIcon = northUserInfo.userIcon;
+        } else {
+          var northName = '';
+          var northIcon = '';
+        }
+        if (westUserInfo) {
+          var westName = westUserInfo.userName;
+          var westIcon = westUserInfo.userIcon;
+        } else {
+          var westName = '';
+          var westIcon = '';
+        }
+        if (southUserInfo) {
+          var southName = southUserInfo.userName;
+          var southIcon = southUserInfo.userIcon;
+        } else {
+          var southName = '';
+          var southIcon = '';
+        }
+        c.setup(eastName, eastIcon, northName, northIcon, westName, westIcon, southName, southIcon);
+      }
+    }).catch((err) => {
       cc.error(err);
       uiTools.toast('打开窗口失败');
     });

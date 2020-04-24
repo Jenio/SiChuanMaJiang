@@ -1,6 +1,7 @@
 import cache from '../model/cache';
 import { fromDirChar, Direction } from '../model/game/concept';
 import ScoreListItem from './game/score/scoreListItem';
+import ScoreUserInfo from './game/score/scoreUserInfo';
 
 const { ccclass, property } = cc._decorator;
 
@@ -17,10 +18,40 @@ export default class InningScore extends cc.Component {
   containerNode: cc.Node = null;
 
   /**
+   * 东方用户信息。
+   */
+  @property(ScoreUserInfo)
+  eastUserInfo: ScoreUserInfo = null;
+
+  /**
+   * 北方用户信息。
+   */
+  @property(ScoreUserInfo)
+  northUserInfo: ScoreUserInfo = null;
+
+  /**
+   * 西方用户信息。
+   */
+  @property(ScoreUserInfo)
+  westUserInfo: ScoreUserInfo = null;
+
+  /**
+   * 南方用户信息。
+   */
+  @property(ScoreUserInfo)
+  southUserInfo: ScoreUserInfo = null;
+
+  /**
    * 列表项预制体。
    */
   @property(cc.Prefab)
   listItemPrefab: cc.Prefab = null;
+
+  /**
+   * 列表项分割线预制体。
+   */
+  @property(cc.Prefab)
+  listItemSepLinePrefab: cc.Prefab = null;
 
   private _destroyed = false;
 
@@ -46,7 +77,13 @@ export default class InningScore extends cc.Component {
           let sumNode = cc.instantiate(this.listItemPrefab);
           this.containerNode.addChild(sumNode);
           for (let n = 0; n < res.innings.length; ++n) {
-            //TODO 添加分割线。
+
+            // 添加分割线。
+            if (this.listItemSepLinePrefab) {
+              let node = cc.instantiate(this.listItemSepLinePrefab);
+              this.containerNode.addChild(node);
+            }
+
             let inning = res.innings[n];
             let eastScore = 0;
             let northScore = 0;
@@ -89,5 +126,31 @@ export default class InningScore extends cc.Component {
 
   onDestroy() {
     this._destroyed = true;
+  }
+
+  /**
+   * 设置。
+   * @param eastName 东方玩家昵称。
+   * @param eastIcon 东方玩家头像。
+   * @param northName 北方玩家昵称。
+   * @param northIcon 北方玩家头像。
+   * @param westName 西方玩家昵称。
+   * @param westIcon 西方玩家头像。
+   * @param southName 南方玩家昵称。
+   * @param southIcon 南方玩家头像。
+   */
+  setup(eastName: string, eastIcon: string, northName: string, northIcon: string, westName: string, westIcon: string, southName: string, southIcon: string) {
+    if (this.eastUserInfo) {
+      this.eastUserInfo.setup(Direction.East, eastName, eastIcon);
+    }
+    if (this.northUserInfo) {
+      this.northUserInfo.setup(Direction.North, northName, northIcon);
+    }
+    if (this.westUserInfo) {
+      this.westUserInfo.setup(Direction.West, westName, westIcon);
+    }
+    if (this.southUserInfo) {
+      this.southUserInfo.setup(Direction.South, southName, southIcon);
+    }
   }
 }

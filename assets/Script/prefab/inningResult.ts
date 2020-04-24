@@ -15,12 +15,6 @@ const { ccclass, property } = cc._decorator;
 export default class InningResult extends cc.Component {
 
   /**
-   * 总体布局节点。
-   */
-  @property(cc.Node)
-  rootNode: cc.Node = null;
-
-  /**
    * 继续按钮节点。
    */
   @property(cc.Node)

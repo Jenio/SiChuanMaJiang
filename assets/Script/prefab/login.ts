@@ -100,7 +100,7 @@ export default class Login extends cc.Component {
     let host: string | undefined = cc.sys.localStorage.getItem('host');
     if (!host) {
       //host = '10.30.1.254';
-      host = '39.101.164.203';
+      host = cache.testServerIp;
       cc.sys.localStorage.setItem('host', host);
     }
     let port: string | undefined = cc.sys.localStorage.getItem('port');
@@ -108,6 +108,9 @@ export default class Login extends cc.Component {
       port = '10001';
       cc.sys.localStorage.setItem('port', port);
     }
+
+    //TODO 请删除以下这行代码。
+    //host = cache.localServerIp;
 
     // 获取界面中输入的信息。
     let acc = this.accEditBox.string;

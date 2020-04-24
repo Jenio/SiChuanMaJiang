@@ -216,6 +216,30 @@ export default class Game extends cc.Component {
   @property(MjPengGangHuGuoUi)
   pengGangHuGuoUi: MjPengGangHuGuoUi = null;
 
+  /**
+   * 碰的声音。
+   */
+  @property(cc.AudioSource)
+  pengAudio: cc.AudioSource = null;
+
+  /**
+   * 杠的声音。
+   */
+  @property(cc.AudioSource)
+  gangAudio: cc.AudioSource = null;
+
+  /**
+   * 胡的声音。
+   */
+  @property(cc.AudioSource)
+  huAudio: cc.AudioSource = null;
+
+  /**
+   * 出牌声音（存放顺序依次为一万到九万，一锁到九锁，一筒到九筒）。
+   */
+  @property(cc.AudioSource)
+  discardAudios: cc.AudioSource[] = [];
+
   private _newClientNotifyHandler = this._onNewClient.bind(this);
   private _queryNotifyHandler = this._onQueryNotify.bind(this);
   private _startDealNotifyHandler = this._onStartDealNotify.bind(this);
@@ -1796,6 +1820,11 @@ export default class Game extends cc.Component {
     let dir = fromDirChar(notify.dir);
     let sdir = this._toScreenDir(dir);
 
+    let audio = this.discardAudios[notify.cardId];
+    if (audio) {
+      audio.play();
+    }
+
     // 关闭所有的出牌区指示器。
     if (this.myDiscardArea) {
       this.myDiscardArea.hideIndicator();
@@ -2023,6 +2052,11 @@ export default class Game extends cc.Component {
     let dir = fromDirChar(notify.dir);
     let fromDir = fromDirChar(notify.fromDir);
 
+    // 播放碰的声音。
+    if (this.pengAudio) {
+      this.pengAudio.play();
+    }
+
     // 关闭所有的出牌区指示器。
     if (this.myDiscardArea) {
       this.myDiscardArea.hideIndicator();
@@ -2086,6 +2120,11 @@ export default class Game extends cc.Component {
     let dir = fromDirChar(notify.dir);
     let fromDir = fromDirChar(notify.fromDir);
 
+    // 播放杠的声音。
+    if (this.gangAudio) {
+      this.gangAudio.play();
+    }
+
     // 关闭所有的出牌区指示器。
     if (this.myDiscardArea) {
       this.myDiscardArea.hideIndicator();
@@ -2133,6 +2172,11 @@ export default class Game extends cc.Component {
 
     let dir = fromDirChar(notify.dir);
 
+    // 播放杠的声音。
+    if (this.gangAudio) {
+      this.gangAudio.play();
+    }
+
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
@@ -2178,6 +2222,11 @@ export default class Game extends cc.Component {
 
     let dir = fromDirChar(notify.dir);
 
+    // 播放杠的声音。
+    if (this.gangAudio) {
+      this.gangAudio.play();
+    }
+
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
@@ -2211,6 +2260,13 @@ export default class Game extends cc.Component {
 
     // 记录消息，以便结算界面弹出时使用。
     this._finishInningNotify = notify;
+
+    // 如果有胡，那么播放胡的声音。
+    if (notify.eastHu !== undefined || notify.northHu !== undefined || notify.westHu !== undefined || notify.southHu !== undefined) {
+      if (this.huAudio) {
+        this.huAudio.play();
+      }
+    }
 
     // 关闭听的显示。
     this._tingInfos.length = 0;

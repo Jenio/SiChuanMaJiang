@@ -14,11 +14,16 @@ export default class Main extends cc.Component {
     if (this.progressBar) {
       this.progressBar.node.active = true;
 
+      let oldProgress = 0;
       cc.loader.loadRes('prefab/all', cc.Prefab, (curr, total, item) => {
         cc.log(`progress: ${item.queueId}, ${curr}/${total}`);
         //cc.log(`progress: ${curr/total}`);
         //cc.log(item);
-        this.progressBar.progress = curr / total;
+        let newProgress = curr / total;
+        if (newProgress > oldProgress) {
+          this.progressBar.progress = newProgress;
+          oldProgress = newProgress;
+        }
       }, (err, prefab) => {
         this.progressBar.node.active = false;
         if (err) {

@@ -2025,12 +2025,27 @@ export default class Game extends cc.Component {
       this.myCardsController.clear();
     }
 
-    //TODO 显示盖牌一段时间。
+    // 显示盖牌一段时间。
+    if (this.myCoversNode) {
+      this.myCoversNode.active = true;
+      for (let child of this.myCoversNode.children) {
+        if (child.active === false) {
+          child.active = true;
+        }
+      }
+      if (this._bankerDir !== this._myDir) {
+        this.myCoversNode.children[0].active = false;
+      }
+    }
     await new Promise(res => setTimeout(res, 1000));
     if (this._destroyed) {
       return;
     }
-    //TODO 隐藏盖牌。
+
+    // 隐藏盖牌。
+    if (this.myCoversNode) {
+      this.myCoversNode.active = false;
+    }
 
     // 重新初始化手牌（排序）。
     let hands = notify.hands.slice();

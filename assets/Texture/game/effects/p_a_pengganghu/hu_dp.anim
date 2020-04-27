@@ -1,9 +1,9 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "hu_gang",
+  "_name": "hu_dp",
   "_objFlags": 0,
   "_native": "",
-  "_duration": 1.3333333333333333,
+  "_duration": 2.0166666666666666,
   "sample": 60,
   "speed": 1,
   "wrapMode": 1,
@@ -79,7 +79,7 @@
               "value": 255
             },
             {
-              "frame": 1.3333333333333333,
+              "frame": 2.0166666666666666,
               "value": 255
             }
           ],
@@ -88,38 +88,56 @@
               "frame": 0,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 1.642,
-                "y": 1.642
+                "x": 1,
+                "y": 1
               }
             },
             {
               "frame": 0.48333333333333334,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 0.812,
-                "y": 0.812
+                "x": 0.643,
+                "y": 0.643
               }
             },
             {
-              "frame": 0.5666666666666667,
+              "frame": 0.6666666666666666,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 0.943,
-                "y": 0.943
+                "x": 1.107,
+                "y": 0.974
               }
             },
             {
-              "frame": 1.3333333333333333,
+              "frame": 2.0166666666666666,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 1.0282,
-                "y": 1.0282
+                "x": 1.291,
+                "y": 1.054
               }
             }
           ]
         }
       },
-      "all/gang_light": {
+      "all/zi_dianpao": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.05,
+              "value": 255
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": 255
+            }
+          ]
+        }
+      },
+      "all/dp_light": {
         "props": {
           "opacity": [
             {
@@ -145,24 +163,6 @@
             {
               "frame": 0.8333333333333334,
               "value": 0
-            }
-          ]
-        }
-      },
-      "all/zi_gang": {
-        "props": {
-          "opacity": [
-            {
-              "frame": 0,
-              "value": 0
-            },
-            {
-              "frame": 0.05,
-              "value": 255
-            },
-            {
-              "frame": 0.8333333333333334,
-              "value": 255
             }
           ]
         }

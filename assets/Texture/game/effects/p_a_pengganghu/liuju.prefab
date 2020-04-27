@@ -58,8 +58,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        817.313,
-        223.604,
+        0,
+        0,
         0,
         0,
         0,
@@ -513,7 +513,9 @@
       "__id__": 1
     },
     "_enabled": true,
-    "_defaultClip": null,
+    "_defaultClip": {
+      "__uuid__": "5a370b79-93c2-40d5-9e72-2b2d596a23e4"
+    },
     "_clips": [
       {
         "__uuid__": "5a370b79-93c2-40d5-9e72-2b2d596a23e4"

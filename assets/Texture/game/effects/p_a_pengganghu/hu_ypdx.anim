@@ -1,6 +1,6 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "hu_gang",
+  "_name": "hu_ypdx",
   "_objFlags": 0,
   "_native": "",
   "_duration": 1.3333333333333333,
@@ -63,7 +63,7 @@
           ]
         }
       },
-      "m1": {
+      "m3": {
         "props": {
           "opacity": [
             {
@@ -79,6 +79,10 @@
               "value": 255
             },
             {
+              "frame": 0.55,
+              "value": 166
+            },
+            {
               "frame": 1.3333333333333333,
               "value": 255
             }
@@ -88,7 +92,7 @@
               "frame": 0,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 1.642,
+                "x": -1.642,
                 "y": 1.642
               }
             },
@@ -96,30 +100,44 @@
               "frame": 0.48333333333333334,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 0.812,
-                "y": 0.812
+                "x": -1.382,
+                "y": 1.106
               }
             },
             {
-              "frame": 0.5666666666666667,
+              "frame": 0.55,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 0.943,
-                "y": 0.943
+                "x": -1.702,
+                "y": 1.348
               }
             },
             {
               "frame": 1.3333333333333333,
               "value": {
                 "__type__": "cc.Vec2",
-                "x": 1.0282,
-                "y": 1.0282
+                "x": -1.798,
+                "y": 1.424
               }
             }
           ]
         }
       },
-      "all/gang_light": {
+      "all/zi_ypdx": {
+        "props": {
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.05,
+              "value": 255
+            }
+          ]
+        }
+      },
+      "all/ypdx_light": {
         "props": {
           "opacity": [
             {
@@ -145,24 +163,6 @@
             {
               "frame": 0.8333333333333334,
               "value": 0
-            }
-          ]
-        }
-      },
-      "all/zi_gang": {
-        "props": {
-          "opacity": [
-            {
-              "frame": 0,
-              "value": 0
-            },
-            {
-              "frame": 0.05,
-              "value": 255
-            },
-            {
-              "frame": 0.8333333333333334,
-              "value": 255
             }
           ]
         }

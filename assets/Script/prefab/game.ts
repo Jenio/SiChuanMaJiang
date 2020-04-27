@@ -140,6 +140,54 @@ export default class Game extends cc.Component {
   rightHuCard: MjCard = null;
 
   /**
+   * 我碰的特效。
+   */
+  @property(cc.Animation)
+  myPengAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家碰的特效。
+   */
+  @property(cc.Animation)
+  topPengAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家碰的特效。
+   */
+  @property(cc.Animation)
+  leftPengAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家碰的特效。
+   */
+  @property(cc.Animation)
+  rightPengAnim: cc.Animation = null;
+
+  /**
+   * 我杠的特效。
+   */
+  @property(cc.Animation)
+  myGangAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠的特效。
+   */
+  @property(cc.Animation)
+  topGangAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠的特效。
+   */
+  @property(cc.Animation)
+  leftGangAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠的特效。
+   */
+  @property(cc.Animation)
+  rightGangAnim: cc.Animation = null;
+
+  /**
    * 我胡的特效。
    */
   @property(cc.Animation)
@@ -162,6 +210,174 @@ export default class Game extends cc.Component {
    */
   @property(cc.Animation)
   rightHuAnim: cc.Animation = null;
+
+  /**
+   * 我点炮的特效。
+   */
+  @property(cc.Animation)
+  myDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  topDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  leftDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  rightDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 我一炮多响的特效。
+   */
+  @property(cc.Animation)
+  myYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  topYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  leftYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  rightYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 我自摸的特效。
+   */
+  @property(cc.Animation)
+  myZiMoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  topZiMoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  leftZiMoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  rightZiMoAnim: cc.Animation = null;
+
+  /**
+   * 我杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  myGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  topGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  leftGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  rightGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 我杠上开花的特效。
+   */
+  @property(cc.Animation)
+  myGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  topGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  leftGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  rightGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 我海底捞月的特效。
+   */
+  @property(cc.Animation)
+  myHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  topHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  leftHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  rightHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 我抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  myQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  topQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  leftQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  rightQiangGangHuAnim: cc.Animation = null;
 
   /**
    * 听按钮节点。
@@ -1065,31 +1281,95 @@ export default class Game extends cc.Component {
   }
 
   /**
-   * 播放胡的特效。
+   * 播放特效。
    * @param sdir 屏幕方位。
+   * @param myAnim 我的动画。
+   * @param topAnim 上方动画。
+   * @param leftAnim 左侧动画。
+   * @param rightAnim 右侧动画。
    */
-  private _playHuEffect(sdir: ScreenDirection) {
-    let huAnim: cc.Animation | undefined;
+  private _playEffect(sdir: ScreenDirection, myAnim: cc.Animation, topAnim: cc.Animation, leftAnim: cc.Animation, rightAnim: cc.Animation) {
+    let anim: cc.Animation | undefined;
     switch (sdir) {
       case ScreenDirection.Bottom:
-        huAnim = this.myHuAnim;
+        anim = myAnim;
         break;
       case ScreenDirection.Top:
-        huAnim = this.topHuAnim;
+        anim = topAnim;
         break;
       case ScreenDirection.Left:
-        huAnim = this.leftHuAnim;
+        anim = leftAnim;
         break;
       case ScreenDirection.Right:
-        huAnim = this.rightHuAnim;
+        anim = rightAnim;
         break;
     }
-    if (huAnim) {
-      huAnim.node.active = true;
-      huAnim.once('stop', (evn) => {
-        huAnim.node.active = false;
+    if (anim) {
+      anim.node.active = true;
+      anim.once('stop', (evn) => {
+        anim.node.active = false;
       });
-      let state = huAnim.play();
+      let state = anim.play();
+      state.repeatCount = 1;
+    }
+  }
+
+  /**
+   * 播放碰的特效。
+   * @param sdir 屏幕方位。
+   */
+  private _playPengEffect(sdir: ScreenDirection) {
+    let pengAnim: cc.Animation | undefined;
+    switch (sdir) {
+      case ScreenDirection.Bottom:
+        pengAnim = this.myPengAnim;
+        break;
+      case ScreenDirection.Top:
+        pengAnim = this.topPengAnim;
+        break;
+      case ScreenDirection.Left:
+        pengAnim = this.leftPengAnim;
+        break;
+      case ScreenDirection.Right:
+        pengAnim = this.rightPengAnim;
+        break;
+    }
+    if (pengAnim) {
+      pengAnim.node.active = true;
+      pengAnim.once('stop', (evn) => {
+        pengAnim.node.active = false;
+      });
+      let state = pengAnim.play();
+      state.repeatCount = 1;
+    }
+  }
+
+  /**
+   * 播放杠的特效。
+   * @param sdir 屏幕方位。
+   */
+  private _playGangEffect(sdir: ScreenDirection) {
+    let gangAnim: cc.Animation | undefined;
+    switch (sdir) {
+      case ScreenDirection.Bottom:
+        gangAnim = this.myGangAnim;
+        break;
+      case ScreenDirection.Top:
+        gangAnim = this.topGangAnim;
+        break;
+      case ScreenDirection.Left:
+        gangAnim = this.leftGangAnim;
+        break;
+      case ScreenDirection.Right:
+        gangAnim = this.rightGangAnim;
+        break;
+    }
+    if (gangAnim) {
+      gangAnim.node.active = true;
+      gangAnim.once('stop', (evn) => {
+        gangAnim.node.active = false;
+      });
+      let state = gangAnim.play();
       state.repeatCount = 1;
     }
   }
@@ -2135,6 +2415,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.peng(notify.cardId, dir, fromDir);
       }
     }
+    this._playPengEffect(sdir);
 
     // 如果是自己的碰，那么轮到自己出牌。
     if (dir === this._myDir) {
@@ -2203,6 +2484,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.mingGang(notify.cardId, dir, fromDir);
       }
     }
+    this._playGangEffect(sdir);
   }
 
   private async _onBuGangNotify(notify: BuGangNotify) {
@@ -2241,6 +2523,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.buGang(notify.cardId, dir);
       }
     }
+    this._playGangEffect(sdir);
 
     // 如果是其他三家补杠，那么需要计算是否有抢杠胡，如果有，那么弹出UI。
     if (sdir !== ScreenDirection.Bottom) {
@@ -2291,6 +2574,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.anGang(notify.cardId, dir);
       }
     }
+    this._playGangEffect(sdir);
   }
 
   private _onFinishInningNotify(notify: FinishInningNotify) {
@@ -2387,7 +2671,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.northHu !== undefined) {
       let sdir = this._toScreenDir(Direction.North);
@@ -2416,7 +2699,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.westHu !== undefined) {
       let sdir = this._toScreenDir(Direction.West);
@@ -2445,7 +2727,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.southHu !== undefined) {
       let sdir = this._toScreenDir(Direction.South);
@@ -2474,7 +2755,32 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
+    }
+
+    // 播放各种胡的特效。
+    for (let hu of notify.huList) {
+      let sdir = this._toScreenDir(fromDirChar(hu.dir));
+      if (hu.titles.indexOf(HuTitle.HaiDiLaoYue) >= 0) {
+        this._playEffect(sdir, this.myHaiDiLaoYueAnim, this.topHaiDiLaoYueAnim, this.leftHaiDiLaoYueAnim, this.rightHaiDiLaoYueAnim);
+      } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
+        this._playEffect(sdir, this.myGangShangHuaAnim, this.topGangShangHuaAnim, this.leftGangShangHuaAnim, this.rightGangShangHuaAnim);
+      } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
+        this._playEffect(sdir, this.myGangShangPaoAnim, this.topGangShangPaoAnim, this.leftGangShangPaoAnim, this.rightGangShangPaoAnim);
+      } else if (hu.titles.indexOf(HuTitle.QiangGang) >= 0) {
+        this._playEffect(sdir, this.myQiangGangHuAnim, this.topQiangGangHuAnim, this.leftQiangGangHuAnim, this.rightQiangGangHuAnim);
+      } else if (hu.titles.indexOf(HuTitle.ZiMo) >= 0) {
+        this._playEffect(sdir, this.myZiMoAnim, this.topZiMoAnim, this.leftZiMoAnim, this.rightZiMoAnim);
+      } else {
+        this._playEffect(sdir, this.myHuAnim, this.topHuAnim, this.leftHuAnim, this.rightHuAnim);
+      }
+      if (hu.dianPao) {
+        let sdirPao = this._toScreenDir(fromDirChar(hu.dianPao.dir));
+        if (notify.huList.length > 1) {
+          this._playEffect(sdirPao, this.myYiPaoDuoXiangAnim, this.topYiPaoDuoXiangAnim, this.leftYiPaoDuoXiangAnim, this.rightYiPaoDuoXiangAnim);
+        } else {
+          this._playEffect(sdirPao, this.myDianPaoAnim, this.topDianPaoAnim, this.leftDianPaoAnim, this.rightDianPaoAnim);
+        }
+      }
     }
 
     // 抢杠胡时需要将对方的杠替换为碰。

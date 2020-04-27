@@ -33,6 +33,12 @@ export default class InningResult extends cc.Component {
   endBtnNode: cc.Node = null;
 
   /**
+   * 结束按钮禁止状态节点。
+   */
+  @property(cc.Node)
+  endDisabledNode: cc.Node = null;
+
+  /**
    * 明细结果控件。
    */
   @property(cc.ScrollView)
@@ -357,6 +363,9 @@ export default class InningResult extends cc.Component {
     if (this.endBtnNode) {
       this.endBtnNode.active = false;
     }
+    if (this.endDisabledNode) {
+      this.endDisabledNode.active = false;
+    }
   }
 
   /**
@@ -371,6 +380,45 @@ export default class InningResult extends cc.Component {
     }
     if (this.endBtnNode) {
       this.endBtnNode.active = false;
+    }
+    if (this.endDisabledNode) {
+      this.endDisabledNode.active = false;
+    }
+  }
+
+  /**
+   * 显示灰掉的结束按钮。
+   */
+  showEndDisableButton() {
+    if (this.nextBtnNode) {
+      this.nextBtnNode.active = false;
+    }
+    if (this.nextDisabledNode) {
+      this.nextDisabledNode.active = false;
+    }
+    if (this.endBtnNode) {
+      this.endBtnNode.active = false;
+    }
+    if (this.endDisabledNode) {
+      this.endDisabledNode.active = true;
+    }
+  }
+
+  /**
+   * 显示结束按钮。
+   */
+  showEndButton() {
+    if (this.nextBtnNode) {
+      this.nextBtnNode.active = false;
+    }
+    if (this.nextDisabledNode) {
+      this.nextDisabledNode.active = false;
+    }
+    if (this.endBtnNode) {
+      this.endBtnNode.active = true;
+    }
+    if (this.endDisabledNode) {
+      this.endDisabledNode.active = false;
     }
   }
 
@@ -398,13 +446,5 @@ export default class InningResult extends cc.Component {
     }).catch((err) => {
       cc.error(err);
     });
-  }
-
-  /**
-   * 点击结束按钮的处理。
-   * @param evn 事件。
-   */
-  onEnd(evn: cc.Event) {
-    evn.stopPropagation();
   }
 }

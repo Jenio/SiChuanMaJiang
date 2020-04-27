@@ -4,7 +4,7 @@ import MjUser from './game/mjUser';
 import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
 import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe } from '../model/game/concept';
-import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify } from '../model/game/msgs/common';
+import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify } from '../model/game/msgs/common';
 import MjMyCardsController from './game/mjMyCardsController';
 import MjPengGangHuGuoUi from './game/mjPengGangHuGuoUi';
 import MjOtherCardsController from './game/mjOtherCardsController';
@@ -15,6 +15,7 @@ import { PlayerResultInfo } from '../model/game/other-structs';
 import InningResult from './inningResult';
 import MjSkipOneUi from './game/mjSkipOneUi';
 import InningScore from './inningScore';
+import FinalInningResult from './finalInningResult';
 
 const { ccclass, property } = cc._decorator;
 
@@ -83,6 +84,12 @@ export default class Game extends cc.Component {
    */
   @property(cc.Label)
   cardsLeftLabel: cc.Label = null;
+
+  /**
+   * 盖牌节点（发牌结束后显示一会儿然后再隐藏）。
+   */
+  @property(cc.Node)
+  myCoversNode: cc.Node = null;
 
   /**
    * 我的牌的控制器。
@@ -240,6 +247,8 @@ export default class Game extends cc.Component {
   @property(cc.AudioSource)
   discardAudios: cc.AudioSource[] = [];
 
+  private _keepAliveHandler = this._onKeepAlive.bind(this);
+
   private _newClientNotifyHandler = this._onNewClient.bind(this);
   private _queryNotifyHandler = this._onQueryNotify.bind(this);
   private _startDealNotifyHandler = this._onStartDealNotify.bind(this);
@@ -253,6 +262,7 @@ export default class Game extends cc.Component {
   private _buGangNotifyHandler = this._onBuGangNotify.bind(this);
   private _anGangNotifyHandler = this._onAnGangNotify.bind(this);
   private _finishInningNotifyHandler = this._onFinishInningNotify.bind(this);
+  private _finishAllInningNotifyHandler = this._onFinishAllInningNotify.bind(this);
   private _keepAliveNotifyHandler = this._onKeepAliveNotify.bind(this);
 
   /**
@@ -301,6 +311,11 @@ export default class Game extends cc.Component {
   private _inningResultNode?: cc.Node;
 
   /**
+   * 对局总结算通知数据缓存。
+   */
+  private _finishAllInningNotify?: FinishAllInningsNotify;
+
+  /**
    * 缺牌提示的次数。
    */
   private _skipTipTimes = 0;
@@ -328,6 +343,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.on('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.on('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.on('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.on('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.on('game/keepAliveNotify', this._keepAliveNotifyHandler);
     this._sendQueryGame();
   }
@@ -347,6 +363,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.off('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.off('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.off('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
   }
 
@@ -354,12 +371,18 @@ export default class Game extends cc.Component {
    * 进入大厅。
    */
   private async _enterHall() {
-    //TODO 关闭所有当前弹出的窗口（例如对局结果、对局流水）。
+
+    // 清理。
+    this._clearForNextInning();
+
+    // 进入大厅。
     try {
       await uiTools.openWindow('prefab/hall');
     } catch (err) {
       cc.error(err);
     }
+
+    // 关闭本窗口。
     uiTools.closeWindow(this.node);
   }
 
@@ -1178,6 +1201,26 @@ export default class Game extends cc.Component {
     this._sendQueryGame();
   }
 
+  private _onKeepAlive() {
+    cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
+      if (res.err !== undefined) {
+        if (res.err === 2 || res.err === 3) {
+          if (!this._finishAllInningNotify) {  // 只有在未完成所有对局的情况下才退出到大厅。
+            this._enterHall();
+          }
+        }
+      }
+    }).catch((err) => {
+      cc.error(err);
+    }).then(() => {
+
+      // 只有在未完成所有对局的情况下才继续保活。
+      if (!this._finishAllInningNotify) {
+        this.scheduleOnce(this._keepAliveHandler, 1);
+      }
+    });
+  }
+
   private _onQueryNotify(gi: GameInfo) {
     cc.log('queryNotify');
     cc.log(gi);
@@ -1197,17 +1240,7 @@ export default class Game extends cc.Component {
     // 每秒一次保活。
     if (!this._keepAliveRunning) {
       this._keepAliveRunning = true;
-      this.schedule(() => {
-        cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
-          if (res.err !== undefined) {
-            if (res.err === 2 || res.err === 3) {
-              this._enterHall();
-            }
-          }
-        }).catch((err) => {
-          cc.error(err);
-        });
-      }, 1, cc.macro.REPEAT_FOREVER);
+      this.scheduleOnce(this._keepAliveHandler, 1);
     }
 
     this._bankerDir = fromDirChar(gi.banker);
@@ -2139,6 +2172,12 @@ export default class Game extends cc.Component {
       this.rightDiscardArea.hideIndicator();
     }
 
+    // 从丢牌区移除牌。
+    let discardArea = this._getDiscardArea(fromDir);
+    if (discardArea) {
+      discardArea.removeLastCard();
+    }
+
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
@@ -2512,11 +2551,58 @@ export default class Game extends cc.Component {
         let c = node.getComponent(InningResult);
         if (c) {
           c.setup(pris);
+
+          // 确定按钮状态。
+          // 总结算数据已就绪则点亮对局结束按钮。
+          if (this._finishAllInningNotify) {
+            c.showEndButton();
+          } else {
+            if (this.currInningLabel && this.totalInningLabel) {
+              let currInning = +this.currInningLabel.string;
+              let totalInning = +this.totalInningLabel.string;
+              if (currInning === totalInning) {
+                c.showEndDisableButton();
+              } else {
+                c.showContinueButton();
+              }
+            }
+          }
         }
+
+        // 在对局结算界面关闭时，如果已收到总结算通知则显示总结算界面。
+        node.once('closed', (evn: cc.Event) => {
+          evn.stopPropagation();
+          if (this._finishAllInningNotify) {
+            uiTools.openWindow('prefab/finalInningResult').then((node) => {
+              node.once('closed', (evn: cc.Event) => {
+                evn.stopPropagation();
+                this._enterHall();
+              });
+              let c = node.getComponent(FinalInningResult);
+              if (c) {
+                c.setup(this._finishAllInningNotify);
+              }
+            }).catch((err) => {
+              cc.error(err);
+            });
+          }
+        });
       }).catch((err) => {
         cc.error(err);
       });
     }, 2);
+  }
+
+  private _onFinishAllInningNotify(notify: FinishAllInningsNotify) {
+    this._finishAllInningNotify = notify;
+
+    // 对局结果界面弹出时需要通知其点亮对局结束按钮。
+    if (this._inningResultNode && this._inningResultNode.active) {
+      let c = this._inningResultNode.getComponent(InningResult);
+      if (c) {
+        c.showEndButton();
+      }
+    }
   }
 
   private _onKeepAliveNotify(notify: KeepAliveNotify) {

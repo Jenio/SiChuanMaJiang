@@ -1375,6 +1375,51 @@ export default class Game extends cc.Component {
   }
 
   /**
+   * 设置当前的操作玩家。
+   * @param dir 方位。
+   */
+  private _setCurrent(dir: Direction) {
+    let sdir = this._toScreenDir(dir);
+
+    // 切换中央指示器。
+    if (this.centerIndicator) {
+      this.centerIndicator.setCurrDir(dir, true);
+      this.centerIndicator.beginCountDown(30);
+    }
+
+    // 切换用户头像的指示器。
+    if (this.myInfo) {
+      this.myInfo.clearCurrent();
+    }
+    if (this.topInfo) {
+      this.topInfo.clearCurrent();
+    }
+    if (this.leftInfo) {
+      this.leftInfo.clearCurrent();
+    }
+    if (this.rightInfo) {
+      this.rightInfo.clearCurrent();
+    }
+    if (sdir === ScreenDirection.Bottom) {
+      if (this.myInfo) {
+        this.myInfo.setCurrent();
+      }
+    } else if (sdir === ScreenDirection.Top) {
+      if (this.topInfo) {
+        this.topInfo.setCurrent();
+      }
+    } else if (sdir === ScreenDirection.Left) {
+      if (this.leftInfo) {
+        this.leftInfo.setCurrent();
+      }
+    } else if (sdir === ScreenDirection.Right) {
+      if (this.rightInfo) {
+        this.rightInfo.setCurrent();
+      }
+    }
+  }
+
+  /**
    * 清理，为下一局做准备。
    */
   private _clearForNextInning() {
@@ -2303,11 +2348,8 @@ export default class Game extends cc.Component {
       }
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
   }
 
   private async _onDrawBackNotify(notify: DrawBackNotify) {
@@ -2366,11 +2408,8 @@ export default class Game extends cc.Component {
       }
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
   }
 
   private async _onPengNotify(notify: PengNotify) {
@@ -2405,11 +2444,8 @@ export default class Game extends cc.Component {
       discardArea.removeLastCard();
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
 
     // 执行碰。
     let sdir = this._toScreenDir(dir);
@@ -2474,11 +2510,8 @@ export default class Game extends cc.Component {
       discardArea.removeLastCard();
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
 
     // 执行明杠。
     let sdir = this._toScreenDir(dir);
@@ -2513,11 +2546,8 @@ export default class Game extends cc.Component {
       this.gangAudio.play();
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
 
     // 执行补杠。
     let sdir = this._toScreenDir(dir);
@@ -2564,11 +2594,8 @@ export default class Game extends cc.Component {
       this.gangAudio.play();
     }
 
-    // 切换中央指示器。
-    if (this.centerIndicator) {
-      this.centerIndicator.setCurrDir(dir, true);
-      this.centerIndicator.beginCountDown(30);
-    }
+    // 切换方位。
+    this._setCurrent(dir);
 
     // 执行暗杠。
     let sdir = this._toScreenDir(dir);

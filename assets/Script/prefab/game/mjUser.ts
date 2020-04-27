@@ -15,6 +15,12 @@ export default class MjUser extends cc.Component {
   offlineNode: cc.Node = null;
 
   /**
+   * 旋转动画（用来表示当前轮到该玩家出牌）。
+   */
+  @property(cc.Animation)
+  rotateAnim: cc.Animation = null;
+
+  /**
    * 头像精灵。
    */
   @property(cc.Sprite)
@@ -168,6 +174,26 @@ export default class MjUser extends cc.Component {
   }
 
   /**
+   * 设置为当前出牌玩家。
+   */
+  setCurrent() {
+    if (this.rotateAnim) {
+      this.rotateAnim.node.active = true;
+      this.rotateAnim.play();
+    }
+  }
+
+  /**
+   * 取消作为当前出牌的玩家。
+   */
+  clearCurrent() {
+    if (this.rotateAnim) {
+      this.rotateAnim.stop();
+      this.rotateAnim.node.active = false;
+    }
+  }
+
+  /**
    * 重置到初始状态。
    */
   reset() {
@@ -177,6 +203,7 @@ export default class MjUser extends cc.Component {
     if (this.bankerNode) {
       this.bankerNode.active = false;
     }
+    this.clearCurrent();
   }
 
   /**

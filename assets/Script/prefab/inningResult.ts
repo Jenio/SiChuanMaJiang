@@ -140,6 +140,16 @@ export default class InningResult extends cc.Component {
 
   onLoad() {
 
+    // 点击背景区域的处理。
+    this.node.on(cc.Node.EventType.TOUCH_START, (evn: cc.Event) => {
+      evn.stopPropagation();
+      this.node.opacity = 0;
+    });
+    this.node.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {
+      evn.stopPropagation();
+      this.node.opacity = 255;
+    });
+
     // 点击玩家切换的处理。
     if (this.userInfoLeft) {
       this.userInfoLeft.node.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {

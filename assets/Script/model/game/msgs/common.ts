@@ -297,3 +297,51 @@ export interface KeepAliveNotify {
    */
   dir: string;
 }
+
+/**
+ * 完成所有对局通知。
+ */
+export interface FinishAllInningsNotify {
+
+  /**
+   * 总局数。
+   */
+  totalInnings: number;
+
+  /**
+   * 对局结果列表。
+   */
+  innings: {
+
+    /**
+     * 玩家分数列表。
+     */
+    players: {
+
+      /**
+       * 用户ID。
+       */
+      uid: number;
+
+      /**
+       * 方位。
+       */
+      dir: string;
+
+      /**
+       * 昵称。
+       */
+      name: string;
+
+      /**
+       * 头像。
+       */
+      icon: string;
+
+      /**
+       * 分数。
+       */
+      score: number;
+    }[];
+  }[];
+}

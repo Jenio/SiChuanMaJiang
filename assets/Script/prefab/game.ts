@@ -4,7 +4,7 @@ import MjUser from './game/mjUser';
 import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
 import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe } from '../model/game/concept';
-import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify } from '../model/game/msgs/common';
+import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify } from '../model/game/msgs/common';
 import MjMyCardsController from './game/mjMyCardsController';
 import MjPengGangHuGuoUi from './game/mjPengGangHuGuoUi';
 import MjOtherCardsController from './game/mjOtherCardsController';
@@ -15,6 +15,7 @@ import { PlayerResultInfo } from '../model/game/other-structs';
 import InningResult from './inningResult';
 import MjSkipOneUi from './game/mjSkipOneUi';
 import InningScore from './inningScore';
+import FinalInningResult from './finalInningResult';
 
 const { ccclass, property } = cc._decorator;
 
@@ -85,6 +86,12 @@ export default class Game extends cc.Component {
   cardsLeftLabel: cc.Label = null;
 
   /**
+   * 盖牌节点（发牌结束后显示一会儿然后再隐藏）。
+   */
+  @property(cc.Node)
+  myCoversNode: cc.Node = null;
+
+  /**
    * 我的牌的控制器。
    */
   @property(MjMyCardsController)
@@ -133,6 +140,54 @@ export default class Game extends cc.Component {
   rightHuCard: MjCard = null;
 
   /**
+   * 我碰的特效。
+   */
+  @property(cc.Animation)
+  myPengAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家碰的特效。
+   */
+  @property(cc.Animation)
+  topPengAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家碰的特效。
+   */
+  @property(cc.Animation)
+  leftPengAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家碰的特效。
+   */
+  @property(cc.Animation)
+  rightPengAnim: cc.Animation = null;
+
+  /**
+   * 我杠的特效。
+   */
+  @property(cc.Animation)
+  myGangAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠的特效。
+   */
+  @property(cc.Animation)
+  topGangAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠的特效。
+   */
+  @property(cc.Animation)
+  leftGangAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠的特效。
+   */
+  @property(cc.Animation)
+  rightGangAnim: cc.Animation = null;
+
+  /**
    * 我胡的特效。
    */
   @property(cc.Animation)
@@ -155,6 +210,174 @@ export default class Game extends cc.Component {
    */
   @property(cc.Animation)
   rightHuAnim: cc.Animation = null;
+
+  /**
+   * 我点炮的特效。
+   */
+  @property(cc.Animation)
+  myDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  topDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  leftDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家点炮的特效。
+   */
+  @property(cc.Animation)
+  rightDianPaoAnim: cc.Animation = null;
+
+  /**
+   * 我一炮多响的特效。
+   */
+  @property(cc.Animation)
+  myYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  topYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  leftYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家一炮多响的特效。
+   */
+  @property(cc.Animation)
+  rightYiPaoDuoXiangAnim: cc.Animation = null;
+
+  /**
+   * 我自摸的特效。
+   */
+  @property(cc.Animation)
+  myZiMoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  topZiMoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  leftZiMoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家自摸的特效。
+   */
+  @property(cc.Animation)
+  rightZiMoAnim: cc.Animation = null;
+
+  /**
+   * 我杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  myGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  topGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  leftGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠上点炮的特效。
+   */
+  @property(cc.Animation)
+  rightGangShangPaoAnim: cc.Animation = null;
+
+  /**
+   * 我杠上开花的特效。
+   */
+  @property(cc.Animation)
+  myGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  topGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  leftGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家杠上开花的特效。
+   */
+  @property(cc.Animation)
+  rightGangShangHuaAnim: cc.Animation = null;
+
+  /**
+   * 我海底捞月的特效。
+   */
+  @property(cc.Animation)
+  myHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  topHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  leftHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家海底捞月的特效。
+   */
+  @property(cc.Animation)
+  rightHaiDiLaoYueAnim: cc.Animation = null;
+
+  /**
+   * 我抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  myQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 上方玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  topQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 左边玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  leftQiangGangHuAnim: cc.Animation = null;
+
+  /**
+   * 右边玩家抢杠胡的特效。
+   */
+  @property(cc.Animation)
+  rightQiangGangHuAnim: cc.Animation = null;
 
   /**
    * 听按钮节点。
@@ -240,6 +463,8 @@ export default class Game extends cc.Component {
   @property(cc.AudioSource)
   discardAudios: cc.AudioSource[] = [];
 
+  private _keepAliveHandler = this._onKeepAlive.bind(this);
+
   private _newClientNotifyHandler = this._onNewClient.bind(this);
   private _queryNotifyHandler = this._onQueryNotify.bind(this);
   private _startDealNotifyHandler = this._onStartDealNotify.bind(this);
@@ -253,6 +478,7 @@ export default class Game extends cc.Component {
   private _buGangNotifyHandler = this._onBuGangNotify.bind(this);
   private _anGangNotifyHandler = this._onAnGangNotify.bind(this);
   private _finishInningNotifyHandler = this._onFinishInningNotify.bind(this);
+  private _finishAllInningNotifyHandler = this._onFinishAllInningNotify.bind(this);
   private _keepAliveNotifyHandler = this._onKeepAliveNotify.bind(this);
 
   /**
@@ -301,6 +527,11 @@ export default class Game extends cc.Component {
   private _inningResultNode?: cc.Node;
 
   /**
+   * 对局总结算通知数据缓存。
+   */
+  private _finishAllInningNotify?: FinishAllInningsNotify;
+
+  /**
    * 缺牌提示的次数。
    */
   private _skipTipTimes = 0;
@@ -328,6 +559,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.on('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.on('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.on('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.on('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.on('game/keepAliveNotify', this._keepAliveNotifyHandler);
     this._sendQueryGame();
   }
@@ -347,6 +579,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/buGangNotify', this._buGangNotifyHandler);
     cache.notifyEvent.off('game/anGangNotify', this._anGangNotifyHandler);
     cache.notifyEvent.off('game/finishInningNotify', this._finishInningNotifyHandler);
+    cache.notifyEvent.off('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
   }
 
@@ -354,12 +587,18 @@ export default class Game extends cc.Component {
    * 进入大厅。
    */
   private async _enterHall() {
-    //TODO 关闭所有当前弹出的窗口（例如对局结果、对局流水）。
+
+    // 清理。
+    this._clearForNextInning();
+
+    // 进入大厅。
     try {
       await uiTools.openWindow('prefab/hall');
     } catch (err) {
       cc.error(err);
     }
+
+    // 关闭本窗口。
     uiTools.closeWindow(this.node);
   }
 
@@ -1042,31 +1281,95 @@ export default class Game extends cc.Component {
   }
 
   /**
-   * 播放胡的特效。
+   * 播放特效。
    * @param sdir 屏幕方位。
+   * @param myAnim 我的动画。
+   * @param topAnim 上方动画。
+   * @param leftAnim 左侧动画。
+   * @param rightAnim 右侧动画。
    */
-  private _playHuEffect(sdir: ScreenDirection) {
-    let huAnim: cc.Animation | undefined;
+  private _playEffect(sdir: ScreenDirection, myAnim: cc.Animation, topAnim: cc.Animation, leftAnim: cc.Animation, rightAnim: cc.Animation) {
+    let anim: cc.Animation | undefined;
     switch (sdir) {
       case ScreenDirection.Bottom:
-        huAnim = this.myHuAnim;
+        anim = myAnim;
         break;
       case ScreenDirection.Top:
-        huAnim = this.topHuAnim;
+        anim = topAnim;
         break;
       case ScreenDirection.Left:
-        huAnim = this.leftHuAnim;
+        anim = leftAnim;
         break;
       case ScreenDirection.Right:
-        huAnim = this.rightHuAnim;
+        anim = rightAnim;
         break;
     }
-    if (huAnim) {
-      huAnim.node.active = true;
-      huAnim.once('stop', (evn) => {
-        huAnim.node.active = false;
+    if (anim) {
+      anim.node.active = true;
+      anim.once('stop', (evn) => {
+        anim.node.active = false;
       });
-      let state = huAnim.play();
+      let state = anim.play();
+      state.repeatCount = 1;
+    }
+  }
+
+  /**
+   * 播放碰的特效。
+   * @param sdir 屏幕方位。
+   */
+  private _playPengEffect(sdir: ScreenDirection) {
+    let pengAnim: cc.Animation | undefined;
+    switch (sdir) {
+      case ScreenDirection.Bottom:
+        pengAnim = this.myPengAnim;
+        break;
+      case ScreenDirection.Top:
+        pengAnim = this.topPengAnim;
+        break;
+      case ScreenDirection.Left:
+        pengAnim = this.leftPengAnim;
+        break;
+      case ScreenDirection.Right:
+        pengAnim = this.rightPengAnim;
+        break;
+    }
+    if (pengAnim) {
+      pengAnim.node.active = true;
+      pengAnim.once('stop', (evn) => {
+        pengAnim.node.active = false;
+      });
+      let state = pengAnim.play();
+      state.repeatCount = 1;
+    }
+  }
+
+  /**
+   * 播放杠的特效。
+   * @param sdir 屏幕方位。
+   */
+  private _playGangEffect(sdir: ScreenDirection) {
+    let gangAnim: cc.Animation | undefined;
+    switch (sdir) {
+      case ScreenDirection.Bottom:
+        gangAnim = this.myGangAnim;
+        break;
+      case ScreenDirection.Top:
+        gangAnim = this.topGangAnim;
+        break;
+      case ScreenDirection.Left:
+        gangAnim = this.leftGangAnim;
+        break;
+      case ScreenDirection.Right:
+        gangAnim = this.rightGangAnim;
+        break;
+    }
+    if (gangAnim) {
+      gangAnim.node.active = true;
+      gangAnim.once('stop', (evn) => {
+        gangAnim.node.active = false;
+      });
+      let state = gangAnim.play();
       state.repeatCount = 1;
     }
   }
@@ -1178,6 +1481,26 @@ export default class Game extends cc.Component {
     this._sendQueryGame();
   }
 
+  private _onKeepAlive() {
+    cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
+      if (res.err !== undefined) {
+        if (res.err === 2 || res.err === 3) {
+          if (!this._finishAllInningNotify) {  // 只有在未完成所有对局的情况下才退出到大厅。
+            this._enterHall();
+          }
+        }
+      }
+    }).catch((err) => {
+      cc.error(err);
+    }).then(() => {
+
+      // 只有在未完成所有对局的情况下才继续保活。
+      if (!this._finishAllInningNotify) {
+        this.scheduleOnce(this._keepAliveHandler, 1);
+      }
+    });
+  }
+
   private _onQueryNotify(gi: GameInfo) {
     cc.log('queryNotify');
     cc.log(gi);
@@ -1197,17 +1520,7 @@ export default class Game extends cc.Component {
     // 每秒一次保活。
     if (!this._keepAliveRunning) {
       this._keepAliveRunning = true;
-      this.schedule(() => {
-        cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
-          if (res.err !== undefined) {
-            if (res.err === 2 || res.err === 3) {
-              this._enterHall();
-            }
-          }
-        }).catch((err) => {
-          cc.error(err);
-        });
-      }, 1, cc.macro.REPEAT_FOREVER);
+      this.scheduleOnce(this._keepAliveHandler, 1);
     }
 
     this._bankerDir = fromDirChar(gi.banker);
@@ -1712,12 +2025,27 @@ export default class Game extends cc.Component {
       this.myCardsController.clear();
     }
 
-    //TODO 显示盖牌一段时间。
+    // 显示盖牌一段时间。
+    if (this.myCoversNode) {
+      this.myCoversNode.active = true;
+      for (let child of this.myCoversNode.children) {
+        if (child.active === false) {
+          child.active = true;
+        }
+      }
+      if (this._bankerDir !== this._myDir) {
+        this.myCoversNode.children[0].active = false;
+      }
+    }
     await new Promise(res => setTimeout(res, 1000));
     if (this._destroyed) {
       return;
     }
-    //TODO 隐藏盖牌。
+
+    // 隐藏盖牌。
+    if (this.myCoversNode) {
+      this.myCoversNode.active = false;
+    }
 
     // 重新初始化手牌（排序）。
     let hands = notify.hands.slice();
@@ -2102,6 +2430,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.peng(notify.cardId, dir, fromDir);
       }
     }
+    this._playPengEffect(sdir);
 
     // 如果是自己的碰，那么轮到自己出牌。
     if (dir === this._myDir) {
@@ -2139,6 +2468,12 @@ export default class Game extends cc.Component {
       this.rightDiscardArea.hideIndicator();
     }
 
+    // 从丢牌区移除牌。
+    let discardArea = this._getDiscardArea(fromDir);
+    if (discardArea) {
+      discardArea.removeLastCard();
+    }
+
     // 切换中央指示器。
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
@@ -2164,6 +2499,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.mingGang(notify.cardId, dir, fromDir);
       }
     }
+    this._playGangEffect(sdir);
   }
 
   private async _onBuGangNotify(notify: BuGangNotify) {
@@ -2202,6 +2538,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.buGang(notify.cardId, dir);
       }
     }
+    this._playGangEffect(sdir);
 
     // 如果是其他三家补杠，那么需要计算是否有抢杠胡，如果有，那么弹出UI。
     if (sdir !== ScreenDirection.Bottom) {
@@ -2252,6 +2589,7 @@ export default class Game extends cc.Component {
         this.rightCardsController.anGang(notify.cardId, dir);
       }
     }
+    this._playGangEffect(sdir);
   }
 
   private _onFinishInningNotify(notify: FinishInningNotify) {
@@ -2348,7 +2686,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.northHu !== undefined) {
       let sdir = this._toScreenDir(Direction.North);
@@ -2377,7 +2714,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.westHu !== undefined) {
       let sdir = this._toScreenDir(Direction.West);
@@ -2406,7 +2742,6 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
     }
     if (notify.southHu !== undefined) {
       let sdir = this._toScreenDir(Direction.South);
@@ -2435,7 +2770,32 @@ export default class Game extends cc.Component {
           this.rightHuCard.playHuEffect();
         }
       }
-      this._playHuEffect(sdir);
+    }
+
+    // 播放各种胡的特效。
+    for (let hu of notify.huList) {
+      let sdir = this._toScreenDir(fromDirChar(hu.dir));
+      if (hu.titles.indexOf(HuTitle.HaiDiLaoYue) >= 0) {
+        this._playEffect(sdir, this.myHaiDiLaoYueAnim, this.topHaiDiLaoYueAnim, this.leftHaiDiLaoYueAnim, this.rightHaiDiLaoYueAnim);
+      } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
+        this._playEffect(sdir, this.myGangShangHuaAnim, this.topGangShangHuaAnim, this.leftGangShangHuaAnim, this.rightGangShangHuaAnim);
+      } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
+        this._playEffect(sdir, this.myGangShangPaoAnim, this.topGangShangPaoAnim, this.leftGangShangPaoAnim, this.rightGangShangPaoAnim);
+      } else if (hu.titles.indexOf(HuTitle.QiangGang) >= 0) {
+        this._playEffect(sdir, this.myQiangGangHuAnim, this.topQiangGangHuAnim, this.leftQiangGangHuAnim, this.rightQiangGangHuAnim);
+      } else if (hu.titles.indexOf(HuTitle.ZiMo) >= 0) {
+        this._playEffect(sdir, this.myZiMoAnim, this.topZiMoAnim, this.leftZiMoAnim, this.rightZiMoAnim);
+      } else {
+        this._playEffect(sdir, this.myHuAnim, this.topHuAnim, this.leftHuAnim, this.rightHuAnim);
+      }
+      if (hu.dianPao) {
+        let sdirPao = this._toScreenDir(fromDirChar(hu.dianPao.dir));
+        if (notify.huList.length > 1) {
+          this._playEffect(sdirPao, this.myYiPaoDuoXiangAnim, this.topYiPaoDuoXiangAnim, this.leftYiPaoDuoXiangAnim, this.rightYiPaoDuoXiangAnim);
+        } else {
+          this._playEffect(sdirPao, this.myDianPaoAnim, this.topDianPaoAnim, this.leftDianPaoAnim, this.rightDianPaoAnim);
+        }
+      }
     }
 
     // 抢杠胡时需要将对方的杠替换为碰。
@@ -2512,11 +2872,58 @@ export default class Game extends cc.Component {
         let c = node.getComponent(InningResult);
         if (c) {
           c.setup(pris);
+
+          // 确定按钮状态。
+          // 总结算数据已就绪则点亮对局结束按钮。
+          if (this._finishAllInningNotify) {
+            c.showEndButton();
+          } else {
+            if (this.currInningLabel && this.totalInningLabel) {
+              let currInning = +this.currInningLabel.string;
+              let totalInning = +this.totalInningLabel.string;
+              if (currInning === totalInning) {
+                c.showEndDisableButton();
+              } else {
+                c.showContinueButton();
+              }
+            }
+          }
         }
+
+        // 在对局结算界面关闭时，如果已收到总结算通知则显示总结算界面。
+        node.once('closed', (evn: cc.Event) => {
+          evn.stopPropagation();
+          if (this._finishAllInningNotify) {
+            uiTools.openWindow('prefab/finalInningResult').then((node) => {
+              node.once('closed', (evn: cc.Event) => {
+                evn.stopPropagation();
+                this._enterHall();
+              });
+              let c = node.getComponent(FinalInningResult);
+              if (c) {
+                c.setup(this._finishAllInningNotify);
+              }
+            }).catch((err) => {
+              cc.error(err);
+            });
+          }
+        });
       }).catch((err) => {
         cc.error(err);
       });
     }, 2);
+  }
+
+  private _onFinishAllInningNotify(notify: FinishAllInningsNotify) {
+    this._finishAllInningNotify = notify;
+
+    // 对局结果界面弹出时需要通知其点亮对局结束按钮。
+    if (this._inningResultNode && this._inningResultNode.active) {
+      let c = this._inningResultNode.getComponent(InningResult);
+      if (c) {
+        c.showEndButton();
+      }
+    }
   }
 
   private _onKeepAliveNotify(notify: KeepAliveNotify) {

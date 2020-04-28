@@ -124,6 +124,7 @@ export default class Entrance extends cc.Component {
       } catch (err) {
         cc.error(err);
       }
+      uiTools.closeWindow(this.node);
 
     } else if (state === 3) {  // 在某个房间内。
 
@@ -150,6 +151,7 @@ export default class Entrance extends cc.Component {
         if (c) {
           c.setRoomInfo(res2);
         }
+        uiTools.closeWindow(this.node);
       } else {
         try {
           await uiTools.openWindow('prefab/game');
@@ -157,6 +159,7 @@ export default class Entrance extends cc.Component {
           cc.error(err);
           return;
         }
+        uiTools.closeWindow(this.node);
       }
     }
   }

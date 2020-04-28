@@ -205,7 +205,13 @@ export default class Hall extends cc.Component {
         c.play();
       }
     }
-    await uiTools.openWindow('prefab/joinRoom');
+    let node = await uiTools.openWindow('prefab/joinRoom');
+    node.once('closed', (evn: cc.Event) => {
+      let needClose = uiTools.getEventUserData(evn);
+      if (needClose) {
+        uiTools.closeWindow(this.node);
+      }
+    });
   }
 
   /**

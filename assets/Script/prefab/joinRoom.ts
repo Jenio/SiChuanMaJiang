@@ -114,7 +114,7 @@ export default class JoinRoom extends cc.Component {
               }).catch((err) => {
                 cc.error(err);
               });
-              uiTools.closeWindow(this.node);
+              uiTools.closeWindowAndFireEvent(this.node, true, false);
 
             }).catch((err) => {
               cc.error(err);

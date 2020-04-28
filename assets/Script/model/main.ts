@@ -6,6 +6,12 @@ const { ccclass, property } = cc._decorator;
 export default class Main extends cc.Component {
 
   /**
+   * 加载节点（当切入其他界面时隐藏）。
+   */
+  @property(cc.Node)
+  loadingNode: cc.Node = null;
+
+  /**
    * 进度条。
    */
   @property(cc.ProgressBar)
@@ -41,6 +47,9 @@ export default class Main extends cc.Component {
           return;
         }
         uiTools.openWindow('prefab/entrance').then((node: cc.Node) => {
+          if (this.loadingNode) {
+            this.loadingNode.active = false;
+          }
         }).catch((err) => {
           cc.error(err);
         });

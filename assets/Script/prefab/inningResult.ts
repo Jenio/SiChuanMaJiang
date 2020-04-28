@@ -152,6 +152,9 @@ export default class InningResult extends cc.Component {
 
     // 点击玩家切换的处理。
     if (this.userInfoLeft) {
+      this.userInfoLeft.node.on(cc.Node.EventType.TOUCH_START, (evn: cc.Event) => {
+        evn.stopPropagation();
+      });
       this.userInfoLeft.node.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {
         evn.stopPropagation();
         if (this._pris) {
@@ -161,6 +164,9 @@ export default class InningResult extends cc.Component {
       });
     }
     if (this.userInfoTop) {
+      this.userInfoTop.node.on(cc.Node.EventType.TOUCH_START, (evn: cc.Event) => {
+        evn.stopPropagation();
+      });
       this.userInfoTop.node.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {
         evn.stopPropagation();
         if (this._pris) {
@@ -170,6 +176,9 @@ export default class InningResult extends cc.Component {
       });
     }
     if (this.userInfoRight) {
+      this.userInfoRight.node.on(cc.Node.EventType.TOUCH_START, (evn: cc.Event) => {
+        evn.stopPropagation();
+      });
       this.userInfoRight.node.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {
         evn.stopPropagation();
         if (this._pris) {

@@ -1,4 +1,5 @@
 import { Direction } from '../../model/game/concept';
+import uiTools from '../../model/ui/tools';
 
 const { ccclass, property } = cc._decorator;
 
@@ -275,6 +276,9 @@ export default class MjCenterIndicator extends cc.Component {
       if (left !== this._countDownLeft) {
         this._countDownLeft = left;
         this._refreshCountDown();
+      }
+      if (left === 0) {
+        uiTools.fireEvent(this.node, 'countDownFin', undefined, true);
       }
     }
   }

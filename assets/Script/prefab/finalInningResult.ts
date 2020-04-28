@@ -38,24 +38,41 @@ export default class FinalInningResult extends cc.Component {
 
   private _res?: FinishAllInningsNotify;
 
+  private _eastName?: string;
+  private _eastIcon?: string;
+  private _northName?: string;
+  private _northIcon?: string;
+  private _westName?: string;
+  private _westIcon?: string;
+  private _southName?: string;
+  private _southIcon?: string;
+
   /**
    * 设置。
-   * @param res 最终对局结果。
+   * @param eastName 东方玩家昵称。
+   * @param eastIcon 东方玩家头像。
+   * @param northName 北方玩家昵称。
+   * @param northIcon 北方玩家头像。
+   * @param westName 西方玩家昵称。
+   * @param westIcon 西方玩家头像。
+   * @param southName 南方玩家昵称。
+   * @param southIcon 南方玩家头像。
+   * @param res 总结算数据，不传时会向服务端发起查询。
    */
-  setup(res: FinishAllInningsNotify) {
+  setup(eastName: string, eastIcon: string, northName: string, northIcon: string, westName: string, westIcon: string, southName: string, southIcon: string, res?: FinishAllInningsNotify) {
+    this._eastName = eastName;
+    this._eastIcon = eastIcon;
+    this._northName = northName;
+    this._northIcon = northIcon;
+    this._westName = westName;
+    this._westIcon = westIcon;
+    this._southName = southName;
+    this._southIcon = southIcon;
     this._res = res;
 
-    let eastName = '';
-    let eastIcon = '';
     let eastScore = 0;
-    let northName = '';
-    let northIcon = '';
     let northScore = 0;
-    let westName = '';
-    let westIcon = '';
     let westScore = 0;
-    let southName = '';
-    let southIcon = '';
     let southScore = 0;
     for (let inning of res.innings) {
       for (let player of inning.players) {
@@ -120,7 +137,7 @@ export default class FinalInningResult extends cc.Component {
     uiTools.openWindow('prefab/inningScore').then((node) => {
       let c = node.getComponent(InningScore);
       if (c) {
-        c.setup2(this._res);
+        c.setup(this._eastName, this._eastIcon, this._northName, this._northIcon, this._westName, this._westIcon, this._southName, this._southIcon, this._res);
       }
     }).catch((err) => {
     });

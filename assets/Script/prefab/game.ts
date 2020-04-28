@@ -16,6 +16,7 @@ import InningResult from './inningResult';
 import MjSkipOneUi from './game/mjSkipOneUi';
 import InningScore from './inningScore';
 import FinalInningResult from './finalInningResult';
+import MjDismissCountDown from './game/mjDismissCountDown';
 
 const { ccclass, property } = cc._decorator;
 
@@ -114,6 +115,12 @@ export default class Game extends cc.Component {
    */
   @property(MjOtherCardsController)
   rightCardsController: MjOtherCardsController = null;
+
+  /**
+   * 房间解散倒计时。
+   */
+  @property(MjDismissCountDown)
+  dismissCountDown: MjDismissCountDown = null;
 
   /**
    * 我的胡牌。
@@ -545,6 +552,12 @@ export default class Game extends cc.Component {
     this.node.on('notFoundRoom', (evn: cc.Event) => {
       evn.stopPropagation();
       this._enterHall();
+    });
+    this.node.on('countDownFin', (evn: cc.Event) => {
+      evn.stopPropagation();
+      if (this.dismissCountDown) {
+        this.dismissCountDown.show(300);
+      }
     });
     cache.otherEvent.on('newClient', this._newClientNotifyHandler);
     cache.notifyEvent.on('game/queryNotify', this._queryNotifyHandler);
@@ -1389,6 +1402,9 @@ export default class Game extends cc.Component {
     if (this.centerIndicator) {
       this.centerIndicator.setCurrDir(dir, true);
       this.centerIndicator.beginCountDown(30);
+      if (this.dismissCountDown) {
+        this.dismissCountDown.hide();
+      }
     }
 
     // 切换用户头像的指示器。
@@ -3037,7 +3053,39 @@ export default class Game extends cc.Component {
               });
               let c = node.getComponent(FinalInningResult);
               if (c) {
-                c.setup(this._finishAllInningNotify);
+                let eastUserInfo = this._getPlayerInfo(Direction.East);
+                let northUserInfo = this._getPlayerInfo(Direction.North);
+                let westUserInfo = this._getPlayerInfo(Direction.West);
+                let southUserInfo = this._getPlayerInfo(Direction.South);
+                if (eastUserInfo) {
+                  var eastName = eastUserInfo.userName;
+                  var eastIcon = eastUserInfo.userIcon;
+                } else {
+                  var eastName = '';
+                  var eastIcon = '';
+                }
+                if (northUserInfo) {
+                  var northName = northUserInfo.userName;
+                  var northIcon = northUserInfo.userIcon;
+                } else {
+                  var northName = '';
+                  var northIcon = '';
+                }
+                if (westUserInfo) {
+                  var westName = westUserInfo.userName;
+                  var westIcon = westUserInfo.userIcon;
+                } else {
+                  var westName = '';
+                  var westIcon = '';
+                }
+                if (southUserInfo) {
+                  var southName = southUserInfo.userName;
+                  var southIcon = southUserInfo.userIcon;
+                } else {
+                  var southName = '';
+                  var southIcon = '';
+                }
+                c.setup(eastName, eastIcon, northName, northIcon, westName, westIcon, southName, southIcon, this._finishAllInningNotify);
               }
             }).catch((err) => {
               cc.error(err);
@@ -3051,14 +3099,62 @@ export default class Game extends cc.Component {
   }
 
   private _onFinishAllInningNotify(notify: FinishAllInningsNotify) {
+    cc.log('finishAllInningNotify');
+    cc.log(notify);
     this._finishAllInningNotify = notify;
 
-    // 对局结果界面弹出时需要通知其点亮对局结束按钮。
-    if (this._inningResultNode && this._inningResultNode.active) {
-      let c = this._inningResultNode.getComponent(InningResult);
-      if (c) {
-        c.showEndButton();
+    // 对局结果界面弹出期间，需要通知其点亮对局结束按钮。
+    // 对局结果未弹出时（有可能是因为所有玩家都超时，服务端主动结束牌局），需要弹出最终结算界面。
+    if (this._inningResultNode) {
+      if (this._inningResultNode.active) {
+        let c = this._inningResultNode.getComponent(InningResult);
+        if (c) {
+          c.showEndButton();
+        }
       }
+    } else {
+      uiTools.openWindow('prefab/finalInningResult').then((node) => {
+        node.once('closed', (evn: cc.Event) => {
+          evn.stopPropagation();
+          this._enterHall();
+        });
+        let c = node.getComponent(FinalInningResult);
+        if (c) {
+          let eastUserInfo = this._getPlayerInfo(Direction.East);
+          let northUserInfo = this._getPlayerInfo(Direction.North);
+          let westUserInfo = this._getPlayerInfo(Direction.West);
+          let southUserInfo = this._getPlayerInfo(Direction.South);
+          if (eastUserInfo) {
+            var eastName = eastUserInfo.userName;
+            var eastIcon = eastUserInfo.userIcon;
+          } else {
+            var eastName = '';
+            var eastIcon = '';
+          }
+          if (northUserInfo) {
+            var northName = northUserInfo.userName;
+            var northIcon = northUserInfo.userIcon;
+          } else {
+            var northName = '';
+            var northIcon = '';
+          }
+          if (westUserInfo) {
+            var westName = westUserInfo.userName;
+            var westIcon = westUserInfo.userIcon;
+          } else {
+            var westName = '';
+            var westIcon = '';
+          }
+          if (southUserInfo) {
+            var southName = southUserInfo.userName;
+            var southIcon = southUserInfo.userIcon;
+          } else {
+            var southName = '';
+            var southIcon = '';
+          }
+          c.setup(eastName, eastIcon, northName, northIcon, westName, westIcon, southName, southIcon, this._finishAllInningNotify);
+        }
+      });
     }
   }
 

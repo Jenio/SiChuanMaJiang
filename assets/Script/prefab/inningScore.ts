@@ -63,33 +63,8 @@ export default class InningScore extends cc.Component {
   /**
    * 更新界面。
    * @param res 结果信息。
-   * @param includeUserInfo 是否更新用户信息的显示。
    */
-  private _update(res: FinishAllInningsNotify, includeUserInfo: boolean) {
-    if (includeUserInfo) {
-      for (let inning of res.innings) {
-        for (let p of inning.players) {
-          let dir = fromDirChar(p.dir);
-          if (dir === Direction.East) {
-            if (this.eastUserInfo) {
-              this.eastUserInfo.setup(Direction.East, p.name, p.icon);
-            }
-          } else if (dir === Direction.North) {
-            if (this.northUserInfo) {
-              this.northUserInfo.setup(Direction.North, p.name, p.icon);
-            }
-          } else if (dir === Direction.West) {
-            if (this.westUserInfo) {
-              this.westUserInfo.setup(Direction.West, p.name, p.icon);
-            }
-          } else if (dir === Direction.South) {
-            if (this.southUserInfo) {
-              this.southUserInfo.setup(Direction.South, p.name, p.icon);
-            }
-          }
-        }
-      }
-    }
+  private _update(res: FinishAllInningsNotify) {
     if (this.listItemPrefab) {
       let eastSum = 0;
       let northSum = 0;
@@ -153,7 +128,7 @@ export default class InningScore extends cc.Component {
           cc.warn(`res.err is: ${res.err}`);
           return;
         }
-        this._update(res, false);
+        this._update(res);
       }).catch((err) => {
         cc.error(err);
       });
@@ -170,8 +145,9 @@ export default class InningScore extends cc.Component {
    * @param westIcon 西方玩家头像。
    * @param southName 南方玩家昵称。
    * @param southIcon 南方玩家头像。
+   * @param res 总结算数据，不传时会向服务端发起查询。
    */
-  setup(eastName: string, eastIcon: string, northName: string, northIcon: string, westName: string, westIcon: string, southName: string, southIcon: string) {
+  setup(eastName: string, eastIcon: string, northName: string, northIcon: string, westName: string, westIcon: string, southName: string, southIcon: string, res?: FinishAllInningsNotify) {
     if (this.eastUserInfo) {
       this.eastUserInfo.setup(Direction.East, eastName, eastIcon);
     }
@@ -184,14 +160,10 @@ export default class InningScore extends cc.Component {
     if (this.southUserInfo) {
       this.southUserInfo.setup(Direction.South, southName, southIcon);
     }
-    this._query();
-  }
-
-  /**
-   * 设置。
-   * @param res 对局详情。
-   */
-  setup2(res: FinishAllInningsNotify) {
-    this._update(res, true);
+    if (!res) {
+      this._query();
+    } else {
+      this._update(res);
+    }
   }
 }

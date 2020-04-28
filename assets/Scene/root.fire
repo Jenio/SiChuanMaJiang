@@ -1781,6 +1781,7 @@
       "__id__": 2
     },
     "_enabled": true,
+    "loadingNode": null,
     "progressBar": {
       "__id__": 25
     },

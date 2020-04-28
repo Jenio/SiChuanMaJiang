@@ -1,0 +1,55 @@
+
+loading.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+light_chan
+  rotate: true
+  xy: 374, 136
+  size: 64, 81
+  orig: 64, 81
+  offset: 0, 0
+  index: -1
+light_si
+  rotate: false
+  xy: 350, 39
+  size: 64, 80
+  orig: 64, 80
+  offset: 0, 0
+  index: -1
+light_zg1
+  rotate: false
+  xy: 244, 202
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+p_chuan
+  rotate: true
+  xy: 2, 2
+  size: 166, 220
+  orig: 166, 220
+  offset: 0, 0
+  index: -1
+p_si
+  rotate: false
+  xy: 2, 170
+  size: 240, 288
+  orig: 240, 288
+  offset: 0, 0
+  index: -1
+sg_1
+  rotate: true
+  xy: 244, 121
+  size: 79, 128
+  orig: 79, 128
+  offset: 0, 0
+  index: -1
+sz
+  rotate: false
+  xy: 224, 3
+  size: 124, 116
+  orig: 124, 116
+  offset: 0, 0
+  index: -1

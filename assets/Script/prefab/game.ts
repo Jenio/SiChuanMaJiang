@@ -3,7 +3,7 @@ import cache from '../model/cache';
 import MjUser from './game/mjUser';
 import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
-import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe } from '../model/game/concept';
+import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe, HuType } from '../model/game/concept';
 import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify } from '../model/game/msgs/common';
 import MjMyCardsController from './game/mjMyCardsController';
 import MjPengGangHuGuoUi from './game/mjPengGangHuGuoUi';
@@ -1836,7 +1836,14 @@ export default class Game extends cc.Component {
           }
         }
       } else if (gi.pendingAction === PendingAction.QiangGangHu) {
-        //TODO
+        if (this.pengGangHuGuoUi) {
+          this.pengGangHuGuoUi.show({
+            peng: false,
+            gang: [],
+            huType: HuType.QiangGang,
+            sendPass: true
+          });
+        }
       } else if (gi.pendingAction === PendingAction.AfterDraw) {
         if (this.myCardsController) {
           let sop = this.myCardsController.calcShowOptionOnDraw(this._numCardsLeft);

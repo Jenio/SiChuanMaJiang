@@ -17,6 +17,7 @@ import MjSkipOneUi from './game/mjSkipOneUi';
 import InningScore from './inningScore';
 import FinalInningResult from './finalInningResult';
 import MjDismissCountDown from './game/mjDismissCountDown';
+import MjCenterIndicator2 from './game/mjCenterIndicator2';
 
 const { ccclass, property } = cc._decorator;
 
@@ -71,8 +72,8 @@ export default class Game extends cc.Component {
   /**
    * 中间指示器。
    */
-  @property(MjCenterIndicator)
-  centerIndicator: MjCenterIndicator = null;
+  @property(MjCenterIndicator2)
+  centerIndicator: MjCenterIndicator2 = null;
 
   /**
    * 牌墙节点（弱化了的牌墙，仅显示剩余牌数）。

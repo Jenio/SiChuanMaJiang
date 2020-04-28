@@ -76,15 +76,15 @@ export default class InningScore extends cc.Component {
             }
           } else if (dir === Direction.North) {
             if (this.northUserInfo) {
-              this.northUserInfo.setup(Direction.East, p.name, p.icon);
+              this.northUserInfo.setup(Direction.North, p.name, p.icon);
             }
           } else if (dir === Direction.West) {
             if (this.westUserInfo) {
-              this.westUserInfo.setup(Direction.East, p.name, p.icon);
+              this.westUserInfo.setup(Direction.West, p.name, p.icon);
             }
           } else if (dir === Direction.South) {
             if (this.southUserInfo) {
-              this.southUserInfo.setup(Direction.East, p.name, p.icon);
+              this.southUserInfo.setup(Direction.South, p.name, p.icon);
             }
           }
         }

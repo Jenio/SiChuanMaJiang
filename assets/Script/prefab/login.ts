@@ -147,8 +147,11 @@ export default class Login extends cc.Component {
           cc.error(err);
         }
         if (cmd2) {
+          cc.log('重连完成。');
+          uiTools.toast('重连完成');
           initCache(cmd2);
         } else {
+          cc.error('重连失败。');
           retry();
         }
       };

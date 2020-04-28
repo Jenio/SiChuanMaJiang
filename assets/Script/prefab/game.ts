@@ -1287,8 +1287,9 @@ export default class Game extends cc.Component {
    * @param topAnim 上方动画。
    * @param leftAnim 左侧动画。
    * @param rightAnim 右侧动画。
+   * @param hideOnStop 是否在播放结束时隐藏。
    */
-  private _playEffect(sdir: ScreenDirection, myAnim: cc.Animation, topAnim: cc.Animation, leftAnim: cc.Animation, rightAnim: cc.Animation) {
+  private _playEffect(sdir: ScreenDirection, myAnim: cc.Animation, topAnim: cc.Animation, leftAnim: cc.Animation, rightAnim: cc.Animation, hideOnStop: boolean) {
     let anim: cc.Animation | undefined;
     switch (sdir) {
       case ScreenDirection.Bottom:
@@ -1306,9 +1307,12 @@ export default class Game extends cc.Component {
     }
     if (anim) {
       anim.node.active = true;
-      anim.once('stop', (evn) => {
-        anim.node.active = false;
-      });
+      if (hideOnStop) {
+        anim.once('stop', (evn: cc.Event) => {
+          evn.stopPropagation();
+          anim.node.active = false;
+        });
+      }
       let state = anim.play();
       state.repeatCount = 1;
     }
@@ -1427,6 +1431,104 @@ export default class Game extends cc.Component {
     this._numCardsLeft = 0;
     this._tingInfos.length = 0;
     this._finishInningNotify = undefined;
+
+    // 所有胡的特效节点隐藏。
+    if (this.myHuAnim) {
+      this.myHuAnim.node.active = false;
+    }
+    if (this.topHuAnim) {
+      this.topHuAnim.node.active = false;
+    }
+    if (this.leftHuAnim) {
+      this.leftHuAnim.node.active = false;
+    }
+    if (this.rightHuAnim) {
+      this.rightHuAnim.node.active = false;
+    }
+    if (this.myDianPaoAnim) {
+      this.myDianPaoAnim.node.active = false;
+    }
+    if (this.topDianPaoAnim) {
+      this.topDianPaoAnim.node.active = false;
+    }
+    if (this.leftDianPaoAnim) {
+      this.leftDianPaoAnim.node.active = false;
+    }
+    if (this.rightDianPaoAnim) {
+      this.rightDianPaoAnim.node.active = false;
+    }
+    if (this.myYiPaoDuoXiangAnim) {
+      this.myYiPaoDuoXiangAnim.node.active = false;
+    }
+    if (this.topYiPaoDuoXiangAnim) {
+      this.topYiPaoDuoXiangAnim.node.active = false;
+    }
+    if (this.leftYiPaoDuoXiangAnim) {
+      this.leftYiPaoDuoXiangAnim.node.active = false;
+    }
+    if (this.rightYiPaoDuoXiangAnim) {
+      this.rightYiPaoDuoXiangAnim.node.active = false;
+    }
+    if (this.myZiMoAnim) {
+      this.myZiMoAnim.node.active = false;
+    }
+    if (this.topZiMoAnim) {
+      this.topZiMoAnim.node.active = false;
+    }
+    if (this.leftZiMoAnim) {
+      this.leftZiMoAnim.node.active = false;
+    }
+    if (this.rightZiMoAnim) {
+      this.rightZiMoAnim.node.active = false;
+    }
+    if (this.myGangShangPaoAnim) {
+      this.myGangShangPaoAnim.node.active = false;
+    }
+    if (this.topGangShangPaoAnim) {
+      this.topGangShangPaoAnim.node.active = false;
+    }
+    if (this.leftGangShangPaoAnim) {
+      this.leftGangShangPaoAnim.node.active = false;
+    }
+    if (this.rightGangShangPaoAnim) {
+      this.rightGangShangPaoAnim.node.active = false;
+    }
+    if (this.myGangShangHuaAnim) {
+      this.myGangShangHuaAnim.node.active = false;
+    }
+    if (this.topGangShangHuaAnim) {
+      this.topGangShangHuaAnim.node.active = false;
+    }
+    if (this.leftGangShangHuaAnim) {
+      this.leftGangShangHuaAnim.node.active = false;
+    }
+    if (this.rightGangShangHuaAnim) {
+      this.rightGangShangHuaAnim.node.active = false;
+    }
+    if (this.myHaiDiLaoYueAnim) {
+      this.myHaiDiLaoYueAnim.node.active = false;
+    }
+    if (this.topHaiDiLaoYueAnim) {
+      this.topHaiDiLaoYueAnim.node.active = false;
+    }
+    if (this.leftHaiDiLaoYueAnim) {
+      this.leftHaiDiLaoYueAnim.node.active = false;
+    }
+    if (this.rightHaiDiLaoYueAnim) {
+      this.rightHaiDiLaoYueAnim.node.active = false;
+    }
+    if (this.myQiangGangHuAnim) {
+      this.myQiangGangHuAnim.node.active = false;
+    }
+    if (this.topQiangGangHuAnim) {
+      this.topQiangGangHuAnim.node.active = false;
+    }
+    if (this.leftQiangGangHuAnim) {
+      this.leftQiangGangHuAnim.node.active = false;
+    }
+    if (this.rightQiangGangHuAnim) {
+      this.rightQiangGangHuAnim.node.active = false;
+    }
 
     // 听牌按钮隐藏。
     if (this.tingNode) {
@@ -2810,24 +2912,24 @@ export default class Game extends cc.Component {
     for (let hu of notify.huList) {
       let sdir = this._toScreenDir(fromDirChar(hu.dir));
       if (hu.titles.indexOf(HuTitle.HaiDiLaoYue) >= 0) {
-        this._playEffect(sdir, this.myHaiDiLaoYueAnim, this.topHaiDiLaoYueAnim, this.leftHaiDiLaoYueAnim, this.rightHaiDiLaoYueAnim);
+        this._playEffect(sdir, this.myHaiDiLaoYueAnim, this.topHaiDiLaoYueAnim, this.leftHaiDiLaoYueAnim, this.rightHaiDiLaoYueAnim, false);
       } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
-        this._playEffect(sdir, this.myGangShangHuaAnim, this.topGangShangHuaAnim, this.leftGangShangHuaAnim, this.rightGangShangHuaAnim);
+        this._playEffect(sdir, this.myGangShangHuaAnim, this.topGangShangHuaAnim, this.leftGangShangHuaAnim, this.rightGangShangHuaAnim, false);
       } else if (hu.titles.indexOf(HuTitle.GangShangHua) >= 0) {
-        this._playEffect(sdir, this.myGangShangPaoAnim, this.topGangShangPaoAnim, this.leftGangShangPaoAnim, this.rightGangShangPaoAnim);
+        this._playEffect(sdir, this.myGangShangPaoAnim, this.topGangShangPaoAnim, this.leftGangShangPaoAnim, this.rightGangShangPaoAnim, false);
       } else if (hu.titles.indexOf(HuTitle.QiangGang) >= 0) {
-        this._playEffect(sdir, this.myQiangGangHuAnim, this.topQiangGangHuAnim, this.leftQiangGangHuAnim, this.rightQiangGangHuAnim);
+        this._playEffect(sdir, this.myQiangGangHuAnim, this.topQiangGangHuAnim, this.leftQiangGangHuAnim, this.rightQiangGangHuAnim, false);
       } else if (hu.titles.indexOf(HuTitle.ZiMo) >= 0) {
-        this._playEffect(sdir, this.myZiMoAnim, this.topZiMoAnim, this.leftZiMoAnim, this.rightZiMoAnim);
+        this._playEffect(sdir, this.myZiMoAnim, this.topZiMoAnim, this.leftZiMoAnim, this.rightZiMoAnim, false);
       } else {
-        this._playEffect(sdir, this.myHuAnim, this.topHuAnim, this.leftHuAnim, this.rightHuAnim);
+        this._playEffect(sdir, this.myHuAnim, this.topHuAnim, this.leftHuAnim, this.rightHuAnim, false);
       }
       if (hu.dianPao) {
         let sdirPao = this._toScreenDir(fromDirChar(hu.dianPao.dir));
         if (notify.huList.length > 1) {
-          this._playEffect(sdirPao, this.myYiPaoDuoXiangAnim, this.topYiPaoDuoXiangAnim, this.leftYiPaoDuoXiangAnim, this.rightYiPaoDuoXiangAnim);
+          this._playEffect(sdirPao, this.myYiPaoDuoXiangAnim, this.topYiPaoDuoXiangAnim, this.leftYiPaoDuoXiangAnim, this.rightYiPaoDuoXiangAnim, false);
         } else {
-          this._playEffect(sdirPao, this.myDianPaoAnim, this.topDianPaoAnim, this.leftDianPaoAnim, this.rightDianPaoAnim);
+          this._playEffect(sdirPao, this.myDianPaoAnim, this.topDianPaoAnim, this.leftDianPaoAnim, this.rightDianPaoAnim, false);
         }
       }
     }

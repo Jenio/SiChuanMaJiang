@@ -15,7 +15,7 @@ export default class Main extends cc.Component {
    * 进度条。
    */
   @property(cc.ProgressBar)
-  progressBar: cc.ProgressBar;
+  progressBar: cc.ProgressBar = null;
 
   /**
    * 加载进入文本框。

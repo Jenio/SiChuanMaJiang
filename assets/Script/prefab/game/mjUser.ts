@@ -57,6 +57,18 @@ export default class MjUser extends cc.Component {
   bankerNode: cc.Node = null;
 
   /**
+   * 聊天节点。
+   */
+  @property(cc.Node)
+  chatNode: cc.Node = null;
+
+  /**
+   * 聊天内容文本框。
+   */
+  @property(cc.Label)
+  chatLabel: cc.Label = null;
+
+  /**
    * 昵称文本框。
    */
   @property(cc.Label)
@@ -81,6 +93,11 @@ export default class MjUser extends cc.Component {
    * 保活超时处理器。
    */
   private _keepAliveTimeoutHandler = this._onKeepAliveTimeout.bind(this);
+
+  /**
+   * 吟唱聊天框处理器。
+   */
+  private _hideChatHandler = this._onHideChat.bind(this);
 
   get userName() {
     return this._name;
@@ -223,6 +240,33 @@ export default class MjUser extends cc.Component {
   private _onKeepAliveTimeout() {
     if (this.offlineNode) {
       this.offlineNode.active = true;
+    }
+  }
+
+  /**
+   * 隐藏聊天内容。
+   */
+  private _onHideChat() {
+    if (this.chatNode) {
+      this.chatNode.active = false;
+    }
+  }
+
+  /**
+   * 设置聊天文本。
+   * @param txt 聊天文本。
+   */
+  setChat(txt: string) {
+    if (this.chatNode) {
+      if (this.chatNode.active) {
+        this.unschedule(this._hideChatHandler);
+      } else {
+        this.chatNode.active = true;
+      }
+      this.scheduleOnce(this._hideChatHandler, 2);
+    }
+    if (this.chatLabel) {
+      this.chatLabel.string = txt;
     }
   }
 }

@@ -299,6 +299,32 @@ export interface KeepAliveNotify {
 }
 
 /**
+ * 聊天通知。
+ */
+export interface ChatNotify {
+
+  /**
+   * 房间ID。
+   */
+  roomId: string;
+
+  /**
+   * 保活用户ID。
+   */
+  uid: number;
+
+  /**
+   * 保活用户所在方位。
+   */
+  dir: string;
+
+  /**
+   * 聊天ID。
+   */
+  chatId: number;
+}
+
+/**
  * 完成所有对局通知。
  */
 export interface FinishAllInningsNotify {

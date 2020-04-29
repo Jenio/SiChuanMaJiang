@@ -4,7 +4,7 @@ import MjUser from './game/mjUser';
 import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
 import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe, HuType } from '../model/game/concept';
-import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify } from '../model/game/msgs/common';
+import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify, ChatNotify } from '../model/game/msgs/common';
 import MjMyCardsController from './game/mjMyCardsController';
 import MjPengGangHuGuoUi from './game/mjPengGangHuGuoUi';
 import MjOtherCardsController from './game/mjOtherCardsController';
@@ -18,6 +18,7 @@ import InningScore from './inningScore';
 import FinalInningResult from './finalInningResult';
 import MjDismissCountDown from './game/mjDismissCountDown';
 import MjCenterIndicator2 from './game/mjCenterIndicator2';
+import ChatSelection from './game/chat/chatSelection';
 
 const { ccclass, property } = cc._decorator;
 
@@ -471,6 +472,12 @@ export default class Game extends cc.Component {
   @property(cc.AudioSource)
   discardAudios: cc.AudioSource[] = [];
 
+  /**
+   * 聊天音效。
+   */
+  @property(cc.AudioSource)
+  chatAudios: cc.AudioSource[] = [];
+
   private _keepAliveHandler = this._onKeepAlive.bind(this);
 
   private _newClientNotifyHandler = this._onNewClient.bind(this);
@@ -488,6 +495,7 @@ export default class Game extends cc.Component {
   private _finishInningNotifyHandler = this._onFinishInningNotify.bind(this);
   private _finishAllInningNotifyHandler = this._onFinishAllInningNotify.bind(this);
   private _keepAliveNotifyHandler = this._onKeepAliveNotify.bind(this);
+  private _chatNotifyHandler = this._onChatNotify.bind(this);
 
   /**
    * 是否已销毁。
@@ -549,6 +557,11 @@ export default class Game extends cc.Component {
    */
   private _keepAliveRunning = false;
 
+  /**
+   * 聊天选择节点。
+   */
+  private _chatSelNode?: cc.Node;
+
   onLoad() {
     this.node.on('notFoundRoom', (evn: cc.Event) => {
       evn.stopPropagation();
@@ -575,6 +588,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.on('game/finishInningNotify', this._finishInningNotifyHandler);
     cache.notifyEvent.on('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.on('game/keepAliveNotify', this._keepAliveNotifyHandler);
+    cache.notifyEvent.on('game/chatNotify', this._chatNotifyHandler);
     this._sendQueryGame();
   }
 
@@ -595,6 +609,7 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/finishInningNotify', this._finishInningNotifyHandler);
     cache.notifyEvent.off('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
+    cache.notifyEvent.off('game/chatNotify', this._chatNotifyHandler);
   }
 
   /**
@@ -1634,6 +1649,12 @@ export default class Game extends cc.Component {
     if (this._inningResultNode) {
       uiTools.closeWindow(this._inningResultNode);
       this._inningResultNode = undefined;
+    }
+
+    // 关闭聊天列表界面。
+    if (this._chatSelNode) {
+      uiTools.closeWindow(this._chatSelNode);
+      this._chatSelNode = undefined;
     }
   }
 
@@ -2752,6 +2773,12 @@ export default class Game extends cc.Component {
     // 记录消息，以便结算界面弹出时使用。
     this._finishInningNotify = notify;
 
+    // 如果当前聊天选择界面开启中则关闭之。
+    if (this._chatSelNode) {
+      uiTools.closeWindow(this._chatSelNode);
+      this._chatSelNode = undefined;
+    }
+
     // 如果有胡，那么播放胡的声音。
     if (notify.eastHu !== undefined || notify.northHu !== undefined || notify.westHu !== undefined || notify.southHu !== undefined) {
       if (this.huAudio) {
@@ -3166,6 +3193,22 @@ export default class Game extends cc.Component {
     }
   }
 
+  private _onChatNotify(notify: ChatNotify) {
+    cc.log('chatNotify');
+    cc.log(notify);
+    let userInfo = this._getPlayerInfo(fromDirChar(notify.dir));
+    if (userInfo) {
+      let msg = ChatSelection.chatMsgs[notify.chatId];
+      if (msg) {
+        userInfo.setChat(msg);
+      }
+    }
+    let audio = this.chatAudios[notify.chatId];
+    if (audio) {
+      audio.play();
+    }
+  }
+
   /**
    * 点击记录按钮的处理。
    */
@@ -3217,6 +3260,16 @@ export default class Game extends cc.Component {
    * 点击聊天按钮的处理。
    */
   onClickChat() {
+    uiTools.openWindow('prefab/chatSel').then((node) => {
+      this._chatSelNode = node;
+      node.once('closed', (evn: Event) => {
+        evn.stopPropagation();
+        this._chatSelNode = undefined;
+      });
+    }).catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开窗口失败');
+    });
   }
 
   /**

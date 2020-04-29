@@ -1,7 +1,6 @@
 import uiTools from '../model/ui/tools';
 import cache from '../model/cache';
 import MjUser from './game/mjUser';
-import MjCenterIndicator from './game/mjCenterIndicator';
 import { GameInfo, PendingAction, ResultClientInfo, HuaZhuClientInfo } from '../model/game/msgs/game-info';
 import { Direction, ScreenDirection, CardId, CardType, fromDirChar, HuTitle, HuForm, toHuFormName, toHuTitleName, toScreenDirNameOfMe, HuType } from '../model/game/concept';
 import { StartDealNotify, StartSkipOneNotify, StartPlayNotify, DiscardNotify, DrawFrontNotify, DrawBackNotify, PengNotify, MingGangNotify, BuGangNotify, AnGangNotify, FinishInningNotify, KeepAliveNotify, FinishAllInningsNotify, ChatNotify } from '../model/game/msgs/common';
@@ -1623,7 +1622,7 @@ export default class Game extends cc.Component {
 
     // 剩余牌数界面隐藏。
     if (this.cardWallNode) {
-      this.cardWallNode.active = true;
+      this.cardWallNode.active = false;
     }
 
     // 中央指示器重置。
@@ -1755,10 +1754,39 @@ export default class Game extends cc.Component {
     if (this.centerIndicator) {
       this.centerIndicator.setMyDir(this._myDir);
 
-      //TODO 这里是错误的，因为当前的出牌人不一定是庄家。
-      this.centerIndicator.setCurrDir(this._bankerDir, true);
+      // 中央指示器指向正确的用户。
+      let done = false;
+      if (gi.mine.drawCard !== undefined) {
+        this.centerIndicator.setCurrDir(this._myDir, true);
+        done = true;
+      } else {
+        for (let other of gi.others) {
+          if (other.drawSize > 0) {
+            this.centerIndicator.setCurrDir(fromDirChar(other.dir), true);
+            done = true;
+            break;
+          }
+        }
+      }
+      if (!done) {
 
-      //TODO 设置倒计时。
+        // 进入此处说明没有人有抽牌，那么中央指示器应该指向最后出牌的玩家。
+        if (gi.discardArea) {
+          this.centerIndicator.setCurrDir(fromDirChar(gi.discardArea.dir), true);
+        }
+
+        //TODO 出了第一张牌后就被别人碰，然后在等待此人碰后出牌，那么此时似乎无法确定中央指示器的方位。
+      }
+
+      // 设置倒计时。
+      this.centerIndicator.beginCountDown(gi.countDownLeft);
+    }
+
+    // 等待阶段2的处理。
+    if (gi.secondWait) {
+      if (this.dismissCountDown) {
+        this.dismissCountDown.show(gi.countDownLeft);
+      }
     }
 
     // 设置我的牌组、手牌、抽牌等。
@@ -2284,6 +2312,11 @@ export default class Game extends cc.Component {
       if (this.cardsLeftLabel) {
         this.cardsLeftLabel.string = this._numCardsLeft.toString();
       }
+    }
+
+    // 中央指示器指向庄家。
+    if (this.centerIndicator) {
+      this.centerIndicator.setCurrDir(this._bankerDir, true);
     }
 
     // 更新定缺。

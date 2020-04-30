@@ -542,6 +542,11 @@ export default class Game extends cc.Component {
   private _inningResultNode?: cc.Node;
 
   /**
+   * 是否正在打开对局结果界面。
+   */
+  private _openingInningResult = false;
+
+  /**
    * 对局总结算通知数据缓存。
    */
   private _finishAllInningNotify?: FinishAllInningsNotify;
@@ -1649,6 +1654,7 @@ export default class Game extends cc.Component {
       uiTools.closeWindow(this._inningResultNode);
       this._inningResultNode = undefined;
     }
+    this._openingInningResult = false;
 
     // 关闭聊天列表界面。
     if (this._chatSelNode) {
@@ -1935,7 +1941,9 @@ export default class Game extends cc.Component {
           this._makeResultOf(gi.result, ScreenDirection.Left),
           this._makeResultOf(gi.result, ScreenDirection.Right)
         ];
+        this._openingInningResult = true;
         uiTools.openWindow('prefab/inningResult').then((node) => {
+          this._openingInningResult = false;
           this._inningResultNode = node;
           let c = node.getComponent(InningResult);
           if (c) {
@@ -2098,6 +2106,13 @@ export default class Game extends cc.Component {
       }
     }
 
+    // 摇骰子。
+    if (this.centerIndicator) {
+      await new Promise((res, rej) => {
+        this.centerIndicator.beginRoll(notify.firstDice, notify.secondDice, res);
+      });
+    }
+
     // 确定发牌的顺序，发牌是从庄家开始的。
     let dirs: Direction[] = [];
     if (this._bankerDir === Direction.East) {
@@ -2257,7 +2272,7 @@ export default class Game extends cc.Component {
         this.myCoversNode.children[0].active = false;
       }
     }
-    await new Promise(res => setTimeout(res, 1000));
+    await new Promise(res => setTimeout(res, 500));
     if (this._destroyed) {
       return;
     }
@@ -2283,6 +2298,11 @@ export default class Game extends cc.Component {
 
     // 完成发牌。
     await this._sendFinishDeal();
+
+    // 倒计时30秒。
+    if (this.centerIndicator) {
+      this.centerIndicator.beginCountDown(30);
+    }
   }
 
   private async _onStartSkipOneNotify(notify: StartSkipOneNotify) {
@@ -3079,8 +3099,10 @@ export default class Game extends cc.Component {
       this._makeResultOf(notify, ScreenDirection.Left),
       this._makeResultOf(notify, ScreenDirection.Right)
     ];
+    this._openingInningResult = true;
     this.scheduleOnce(() => {
       uiTools.openWindow('prefab/inningResult').then((node) => {
+        this._openingInningResult = false;
         this._inningResultNode = node;
         let c = node.getComponent(InningResult);
         if (c) {
@@ -3173,7 +3195,7 @@ export default class Game extends cc.Component {
           c.showEndButton();
         }
       }
-    } else {
+    } else if (!this._openingInningResult) {
       uiTools.openWindow('prefab/finalInningResult').then((node) => {
         node.once('closed', (evn: cc.Event) => {
           evn.stopPropagation();

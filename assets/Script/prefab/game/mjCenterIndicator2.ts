@@ -16,10 +16,28 @@ export default class MjCenterIndicator2 extends cc.Component {
   rotateNode: cc.Node = null;
 
   /**
-   * 动画数据。
+   * 东南西北切换动画。
    */
   @property(sp.Skeleton)
   skeleton: sp.Skeleton = null;
+
+  /**
+   * 骰子动画。
+   */
+  @property(cc.Animation)
+  diceAnim: cc.Animation = null;
+
+  /**
+   * 骰子1精灵。
+   */
+  @property(cc.Sprite)
+  dice1Sprite: cc.Sprite = null;
+
+  /**
+   * 骰子2精灵。
+   */
+  @property(cc.Sprite)
+  dice2Sprite: cc.Sprite = null;
 
   /**
    * 左侧数字精灵。
@@ -40,6 +58,12 @@ export default class MjCenterIndicator2 extends cc.Component {
   digitSpritFrames: cc.SpriteFrame[] = [];
 
   /**
+   * 骰子精灵帧。
+   */
+  @property(cc.SpriteFrame)
+  diceSpriteFrames: cc.SpriteFrame[] = [];
+
+  /**
    * 是否显示倒计时。
    */
   private _showCountDown = false;
@@ -58,13 +82,6 @@ export default class MjCenterIndicator2 extends cc.Component {
    * 倒计时开始时间戳。
    */
   private _countDownStartTs = Date.now();
-
-  /**
-   * 是否显示骰子。
-   */
-  private _showDice = false;
-
-  //TODO 加入骰子相关。
 
   /**
    * 是否显示光照。
@@ -142,8 +159,12 @@ export default class MjCenterIndicator2 extends cc.Component {
     this._countDown = 0;
     this._countDownLeft = 0;
     this._countDownStartTs = Date.now();
-
-    this._showDice = false;
+    if (this.leftDigitSprite) {
+      this.leftDigitSprite.node.active = false;
+    }
+    if (this.rightDigitSprite) {
+      this.rightDigitSprite.node.active = false;
+    }
 
     this._showLight = false;
   }
@@ -185,6 +206,15 @@ export default class MjCenterIndicator2 extends cc.Component {
     if (seconds > 99) {
       seconds = 99;
     }
+    if (this.diceAnim) {
+      this.diceAnim.node.active = false;
+    }
+    if (this.leftDigitSprite) {
+      this.leftDigitSprite.node.active = true;
+    }
+    if (this.rightDigitSprite) {
+      this.rightDigitSprite.node.active = true;
+    }
     this._countDown = seconds;
     this._countDownLeft = seconds;
     this._countDownStartTs = Date.now();
@@ -216,6 +246,34 @@ export default class MjCenterIndicator2 extends cc.Component {
       if (left === 0) {
         uiTools.fireEvent(this.node, 'countDownFin', undefined, true);
       }
+    }
+  }
+
+  /**
+   * 开始摇骰子。
+   * @param dice1 骰子1点数。
+   * @param dice2 骰子2点数。
+   * @param finCallback 完成毁掉。
+   */
+  beginRoll(dice1: number, dice2: number, finCallback: () => void) {
+    if (this.leftDigitSprite) {
+      this.leftDigitSprite.node.active = false;
+    }
+    if (this.rightDigitSprite) {
+      this.rightDigitSprite.node.active = false;
+    }
+    if (this.dice1Sprite) {
+      this.dice1Sprite.spriteFrame = this.diceSpriteFrames[dice1 - 1];
+    }
+    if (this.dice2Sprite) {
+      this.dice2Sprite.spriteFrame = this.diceSpriteFrames[dice2 - 1];
+    }
+    if (this.diceAnim) {
+      this.diceAnim.node.active = true;
+      this.diceAnim.once('stop', finCallback);
+      this.diceAnim.play();
+    } else {
+      finCallback();
     }
   }
 }

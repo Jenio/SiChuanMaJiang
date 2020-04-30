@@ -12,6 +12,11 @@ export interface StartDealNotify {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 当前对局数（基于0）。
    */
   currInning: number;
@@ -51,6 +56,11 @@ export interface StartSkipOneNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 }
 
 /**
@@ -62,6 +72,11 @@ export interface StartPlayNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 所有玩家的定缺情况。
@@ -96,6 +111,11 @@ export interface DiscardNotify {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 出牌的用户ID。
    */
   uid: number;
@@ -120,6 +140,11 @@ export interface DrawFrontNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 抽牌的用户ID。
@@ -148,6 +173,11 @@ export interface DrawBackNotify {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 抽牌的用户ID。
    */
   uid: number;
@@ -172,6 +202,11 @@ export interface PengNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 碰牌的用户ID。
@@ -205,6 +240,11 @@ export interface MingGangNotify {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 杠牌的用户ID。
    */
   uid: number;
@@ -236,6 +276,11 @@ export interface BuGangNotify {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 补杠牌的用户ID。
    */
   uid: number;
@@ -260,6 +305,11 @@ export interface AnGangNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 暗杠牌的用户ID。
@@ -296,6 +346,11 @@ export interface KeepAliveNotify {
    * 保活用户所在方位。
    */
   dir: string;
+
+  /**
+   * 标识。
+   */
+  id: number;
 }
 
 /**
@@ -307,6 +362,11 @@ export interface ChatNotify {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 保活用户ID。
@@ -328,6 +388,11 @@ export interface ChatNotify {
  * 完成所有对局通知。
  */
 export interface FinishAllInningsNotify {
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 总局数。

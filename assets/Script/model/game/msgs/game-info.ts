@@ -398,6 +398,11 @@ export interface ResultClientInfo {
   roomId: string;
 
   /**
+   * 顺序号。
+   */
+  sn: number;
+
+  /**
    * 胡列表，空数组表示流局。
    */
   huList: HuClientInfo[];
@@ -482,6 +487,11 @@ export interface GameInfo {
    * 房间ID。
    */
   roomId: string;
+
+  /**
+   * 顺序号。
+   */
+  sn: number;
 
   /**
    * 当前局数（基于0）。

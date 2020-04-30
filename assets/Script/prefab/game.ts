@@ -18,6 +18,7 @@ import FinalInningResult from './finalInningResult';
 import MjDismissCountDown from './game/mjDismissCountDown';
 import MjCenterIndicator2 from './game/mjCenterIndicator2';
 import ChatSelection from './game/chat/chatSelection';
+import { CmdClient } from '../model/network/cmd';
 
 const { ccclass, property } = cc._decorator;
 
@@ -478,6 +479,7 @@ export default class Game extends cc.Component {
   chatAudios: cc.AudioSource[] = [];
 
   private _keepAliveHandler = this._onKeepAlive.bind(this);
+  private _keepAliveTimeoutHandler = this._onKeepAliveTimeout.bind(this);
 
   private _newClientNotifyHandler = this._onNewClient.bind(this);
   private _queryNotifyHandler = this._onQueryNotify.bind(this);
@@ -532,11 +534,6 @@ export default class Game extends cc.Component {
   private _tingInfos: CardTingInfo[] = [];
 
   /**
-   * 结算通知（作为结算界面的数据源）。
-   */
-  private _finishInningNotify?: FinishInningNotify;
-
-  /**
    * 对局结算界面节点（打开结算界面时记录下来，在开始下一局时关掉）。
    */
   private _inningResultNode?: cc.Node;
@@ -562,9 +559,24 @@ export default class Game extends cc.Component {
   private _keepAliveRunning = false;
 
   /**
+   * 保活顺序号。
+   */
+  private _keepAliveSn?: number;
+
+  /**
+   * 保活时使用的通讯层对象。
+   */
+  private _keepAliveCmd?: CmdClient;
+
+  /**
    * 聊天选择节点。
    */
   private _chatSelNode?: cc.Node;
+
+  /**
+   * 最后接收到的通知的顺序号。
+   */
+  private _lastNotifySn = -1;
 
   onLoad() {
     this.node.on('notFoundRoom', (evn: cc.Event) => {
@@ -1466,7 +1478,6 @@ export default class Game extends cc.Component {
     this._skipTipTimes = 0;
     this._numCardsLeft = 0;
     this._tingInfos.length = 0;
-    this._finishInningNotify = undefined;
 
     // 所有胡的特效节点隐藏。
     if (this.myHuAnim) {
@@ -1671,9 +1682,25 @@ export default class Game extends cc.Component {
     this._sendQueryGame();
   }
 
+  private _onKeepAliveTimeout() {
+    cc.log('keep alive timeout');
+    if (this._keepAliveCmd) {
+      this._keepAliveCmd.close();
+      this._keepAliveCmd = undefined;
+    }
+  }
+
   private _onKeepAlive() {
-    cache.cmd.execCmd(`${cache.route}:game/keepAlive`, { roomId: cache.roomId }).then((res) => {
+    this._keepAliveSn = Date.now();
+    this.scheduleOnce(this._keepAliveTimeoutHandler, 3);  // 3秒后触发超时。
+    this._keepAliveCmd = cache.cmd;
+    this._keepAliveCmd.execCmd(`${cache.route}:game/keepAlive`, {
+      roomId: cache.roomId,
+      id: this._keepAliveSn
+    }).then((res) => {
       if (res.err !== undefined) {
+        cc.warn(`res.err is: ${res.err}`);
+        this.unschedule(this._keepAliveTimeoutHandler);
         if (res.err === 2 || res.err === 3) {
           if (!this._finishAllInningNotify) {  // 只有在未完成所有对局的情况下才退出到大厅。
             this._enterHall();
@@ -1682,18 +1709,39 @@ export default class Game extends cc.Component {
       }
     }).catch((err) => {
       cc.error(err);
-    }).then(() => {
-
-      // 只有在未完成所有对局的情况下才继续保活。
-      if (!this._finishAllInningNotify) {
-        this.scheduleOnce(this._keepAliveHandler, 1);
+      if (typeof err !== 'string') {
+        this._keepAliveCmd.close();
       }
     });
+  }
+
+  private _onKeepAliveNotify(notify: KeepAliveNotify) {
+    let userInfo = this._getPlayerInfo(fromDirChar(notify.dir));
+    if (userInfo === this.myInfo) {
+      if (notify.id === this._keepAliveSn) {
+        this.unschedule(this._keepAliveTimeoutHandler);
+
+        // 只有在未完成所有对局的情况下才继续保活。
+        if (!this._finishAllInningNotify) {
+          this.scheduleOnce(this._keepAliveHandler, 1);
+        }
+      } else {
+        cc.warn('unknown id');
+      }
+    } else {
+      userInfo.keepAlive();
+    }
   }
 
   private _onQueryNotify(gi: GameInfo) {
     cc.log('queryNotify');
     cc.log(gi);
+
+    // 通知去重。
+    if (gi.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = gi.sn;
 
     if (!this._acceptQueryNotify) {
       return;
@@ -1707,7 +1755,7 @@ export default class Game extends cc.Component {
       this._clearForNextInning();
     }
 
-    // 每秒一次保活。
+    // 1秒后开始进行保活处理。
     if (!this._keepAliveRunning) {
       this._keepAliveRunning = true;
       this.scheduleOnce(this._keepAliveHandler, 1);
@@ -2074,6 +2122,14 @@ export default class Game extends cc.Component {
   }
 
   private async _onStartDealNotify(notify: StartDealNotify) {
+    cc.log('startDealNotify');
+    cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
 
     // 清理上局的数据。
     this._clearForNextInning();
@@ -2111,6 +2167,9 @@ export default class Game extends cc.Component {
       await new Promise((res, rej) => {
         this.centerIndicator.beginRoll(notify.firstDice, notify.secondDice, res);
       });
+      if (this._destroyed) {
+        return;
+      }
     }
 
     // 确定发牌的顺序，发牌是从庄家开始的。
@@ -2306,6 +2365,16 @@ export default class Game extends cc.Component {
   }
 
   private async _onStartSkipOneNotify(notify: StartSkipOneNotify) {
+    cc.log('startSkipOneNotify');
+    cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
+    this._lastNotifySn = notify.sn;
     this._numCardsLeft = 55;
     if (this.skipOneUi) {
       this.skipOneUi.show();
@@ -2319,6 +2388,15 @@ export default class Game extends cc.Component {
   }
 
   private async _onStartPlayNotify(notify: StartPlayNotify) {
+    cc.log('startPlayNotify');
+    cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     this._numCardsLeft = 55;
 
     // 隐藏定缺界面。
@@ -2389,6 +2467,12 @@ export default class Game extends cc.Component {
   private async _onDiscardNotify(notify: DiscardNotify) {
     cc.log('discardNotify');
     cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
 
     let dir = fromDirChar(notify.dir);
     let sdir = this._toScreenDir(dir);
@@ -2497,6 +2581,12 @@ export default class Game extends cc.Component {
     cc.log('drawFrontNotify');
     cc.log(notify);
 
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     let dir = fromDirChar(notify.dir);
     let sdir = this._toScreenDir(dir);
 
@@ -2555,6 +2645,12 @@ export default class Game extends cc.Component {
   private async _onDrawBackNotify(notify: DrawBackNotify) {
     cc.log('drawBackNotify');
     cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
 
     let dir = fromDirChar(notify.dir);
     let sdir = this._toScreenDir(dir);
@@ -2615,6 +2711,12 @@ export default class Game extends cc.Component {
   private async _onPengNotify(notify: PengNotify) {
     cc.log('pengNotify');
     cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
 
     let dir = fromDirChar(notify.dir);
     let fromDir = fromDirChar(notify.fromDir);
@@ -2682,6 +2784,12 @@ export default class Game extends cc.Component {
     cc.log('mingGangNotify');
     cc.log(notify);
 
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     let dir = fromDirChar(notify.dir);
     let fromDir = fromDirChar(notify.fromDir);
 
@@ -2739,6 +2847,12 @@ export default class Game extends cc.Component {
     cc.log('buGangNotify');
     cc.log(notify);
 
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     let dir = fromDirChar(notify.dir);
 
     // 播放杠的声音。
@@ -2787,6 +2901,12 @@ export default class Game extends cc.Component {
     cc.log('anGangNotify');
     cc.log(notify);
 
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     let dir = fromDirChar(notify.dir);
 
     // 播放杠的声音。
@@ -2823,8 +2943,11 @@ export default class Game extends cc.Component {
     cc.log('finishInningNotify');
     cc.log(notify);
 
-    // 记录消息，以便结算界面弹出时使用。
-    this._finishInningNotify = notify;
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
 
     // 如果当前聊天选择界面开启中则关闭之。
     if (this._chatSelNode) {
@@ -3184,6 +3307,13 @@ export default class Game extends cc.Component {
   private _onFinishAllInningNotify(notify: FinishAllInningsNotify) {
     cc.log('finishAllInningNotify');
     cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     this._finishAllInningNotify = notify;
 
     // 对局结果界面弹出期间，需要通知其点亮对局结束按钮。
@@ -3241,16 +3371,16 @@ export default class Game extends cc.Component {
     }
   }
 
-  private _onKeepAliveNotify(notify: KeepAliveNotify) {
-    let userInfo = this._getPlayerInfo(fromDirChar(notify.dir));
-    if (userInfo !== this.myInfo) {
-      userInfo.keepAlive();
-    }
-  }
-
   private _onChatNotify(notify: ChatNotify) {
     cc.log('chatNotify');
     cc.log(notify);
+
+    // 通知去重。
+    if (notify.sn <= this._lastNotifySn) {
+      return;
+    }
+    this._lastNotifySn = notify.sn;
+
     let userInfo = this._getPlayerInfo(fromDirChar(notify.dir));
     if (userInfo) {
       let msg = ChatSelection.chatMsgs[notify.chatId];

@@ -140,20 +140,21 @@ export default class Login extends cc.Component {
     // 记录连接。
     let initCache = (cmd: CmdClient) => {
       let retry = async () => {
-        let cmd2: CmdClient | undefined;
         try {
-          cmd2 = await this._login(host, +port, acc, pwd, false);
+          var cmd2 = await this._login(host, +port, acc, pwd, false);
         } catch (err) {
           cc.error(err);
         }
-        if (cmd2) {
-          cc.log('重连完成。');
-          uiTools.toast('重连完成');
-          initCache(cmd2);
-        } else {
+        if (!cmd2) {
           cc.error('重连失败。');
           retry();
+          return;
         }
+        cc.log('重连完成。');
+        uiTools.toast('重连完成');
+        initCache(cmd2);
+        cache.cmd = cmd2;
+        cache.otherEvent.emit('newClient');
       };
       cmd.bindClosed(() => {
         cmd.unbindUnknown();
@@ -162,10 +163,9 @@ export default class Login extends cc.Component {
       cmd.bindUnknown((notify, data) => {
         cache.notifyEvent.emit(notify, data);
       });
-      cache.otherEvent.emit('newClient');
-      cache.cmd = cmd;
     };
     initCache(cmd);
+    cache.cmd = cmd;
 
     // 记录账号。
     cc.sys.localStorage.setItem('acc', acc);

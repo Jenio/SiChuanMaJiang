@@ -253,7 +253,7 @@ export default class MjCenterIndicator2 extends cc.Component {
    * 开始摇骰子。
    * @param dice1 骰子1点数。
    * @param dice2 骰子2点数。
-   * @param finCallback 完成毁掉。
+   * @param finCallback 完成回调。
    */
   beginRoll(dice1: number, dice2: number, finCallback: () => void) {
     if (this.leftDigitSprite) {

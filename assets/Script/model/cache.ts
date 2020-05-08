@@ -4,6 +4,8 @@ namespace cache {
   export let localServerIp = '10.30.1.254';
   //export let testServerIp = '39.101.164.203';
   export let testServerIp = '47.57.92.103';
+  export let port = 10001;
+  export let appId = '01c54t8Ngw3yj31r';
 
   /**
    * 游戏ID。

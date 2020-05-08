@@ -105,7 +105,7 @@ export default class Login extends cc.Component {
     }
     let port: string | undefined = cc.sys.localStorage.getItem('port');
     if (!port) {
-      port = '10001';
+      port = cache.port.toString();
       cc.sys.localStorage.setItem('port', port);
     }
 

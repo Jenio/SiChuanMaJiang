@@ -1,4 +1,5 @@
 import { CmdClient } from './network/cmd';
+import { GacSdk } from './sdk/gac';
 
 namespace cache {
   export let localServerIp = '10.30.1.254';
@@ -6,6 +7,13 @@ namespace cache {
   export let testServerIp = '47.57.92.103';
   export let port = 10001;
   export let appId = '01c54t8Ngw3yj31r';
+
+  export let gacSdk: GacSdk | undefined;
+
+  /**
+   * 渠道（运行时会检测并更新为相应的渠道）。
+   */
+  export let channel = 'default';
 
   /**
    * 游戏ID。
@@ -21,6 +29,11 @@ namespace cache {
    * 网络通知事件。
    */
   export let notifyEvent = new cc.EventTarget();
+
+  /**
+   * sdk接入事件。
+   */
+  export let sdkEvent = new cc.EventTarget();
 
   /**
    * 其他事件。

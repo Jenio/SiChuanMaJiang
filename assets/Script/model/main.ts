@@ -2,6 +2,7 @@ import uiTools from './ui/tools';
 import cache from './cache';
 import { CmdClient } from './network/cmd';
 import Room from '../prefab/room';
+import { gacDetectAndPrepare } from './sdk/gac';
 
 const { ccclass, property } = cc._decorator;
 
@@ -212,10 +213,63 @@ export default class Main extends cc.Component {
       }, (err, prefab) => {
         this.progressBar.node.active = false;
         if (err) {
-          cc.log('err');
+          cc.log(err);
           return;
         }
 
+        // 尝试使用青苹果钱包。
+        cache.gacSdk = gacDetectAndPrepare();
+        if (cache.gacSdk) {
+          cache.sdkEvent.once('gacLogin', (token: string) => {
+            this._loginGac(token).then(() => {
+
+              // 登入成功后的额外处理。
+              if (cache.cmd) {
+
+                (async () => {
+
+                  // 跟踪遗留的订单。
+                  let orders = cc.sys.localStorage.getItem('payingOrders');
+                  if (orders instanceof Array) {
+                    let copy = orders.slice();  // 异步过程，别的地方可能会改变orders，因此这里需要拷贝。
+                    try {
+                      for (let orderId of copy) {
+                        let res = await cache.cmd.execCmd('gacPay/traceOrder', { orderId });
+
+                        // 如果已成功跟踪则从缓存中删除。
+                        if (res.err === undefined) {
+                          let orders2 = cc.sys.localStorage.getItem('payingOrders');
+                          if (orders2 instanceof Array) {
+                            let idx = orders2.indexOf(orderId);
+                            if (idx >= 0) {
+                              orders2.splice(idx, 1);
+                            }
+                          }
+                        }
+                      }
+                    } catch (err) {
+                      cc.error(err);
+                    }
+                  }
+
+                  // 尝试接收已完成的订单的商品（类似于收邮件一次）。
+                  try {
+                    await cache.cmd.execCmd('gacPay/receive', {});
+                  } catch (err) {
+                    cc.error(err);
+                  }
+
+                })();
+
+              }
+
+            });
+          });
+          cache.gacSdk.getTemporaryCode(cache.appId);
+          return;
+        }
+
+        /*
         // 注册青苹果回调函数。
         let self = this;
         (<any>window).devieceUtil = {
@@ -241,15 +295,18 @@ export default class Main extends cc.Component {
         let iosSdk = (<any>window).webkit;
         if (androidSdk !== undefined) {
           if (androidSdk.getTemporaryCode) {
+            cache.channel = 'gac';
             androidSdk.getTemporaryCode(cache.appId);
             return;
           }
         } else if (iosSdk !== undefined) {
           if (iosSdk.messageHandlers && iosSdk.messageHandlers.getTemporaryCode && iosSdk.messageHandlers.getTemporaryCode.postMessage) {
+            cache.channel = 'gac';
             iosSdk.messageHandlers.getTemporaryCode.postMessage(cache.appId);
             return;
           }
         }
+        */
 
         // 不存在SDK的情况，使用自有系统入口。
         uiTools.openWindow('prefab/entrance').then((node: cc.Node) => {

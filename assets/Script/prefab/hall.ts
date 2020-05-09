@@ -1,5 +1,4 @@
 import uiTools from '../model/ui/tools';
-import { CmdClient } from '../model/network/cmd';
 import cache from '../model/cache';
 import Room from './room';
 
@@ -77,7 +76,27 @@ export default class Hall extends cc.Component {
   @property(cc.SpriteFrame)
   iconSpriteFrames: cc.SpriteFrame[] = [];
 
+  private _onGainBeanNotifyHandler = this._onGainBeanNotify.bind(this);
+
+  private _onGainBeanNotify(notify: {
+    gain: number;
+    bean: number;
+  }) {
+    cc.log('gainBeanNotify');
+    cc.log(notify);
+    uiTools.toast(`获得了${notify.gain}豆`);
+    if (this.beanLabel) {
+      this.beanLabel.string = notify.bean.toString();
+    }
+  }
+
+  onDestroy() {
+    cache.notifyEvent.off('gacPay/gainBeanNotify', this._onGainBeanNotifyHandler);
+  }
+
   onLoad() {
+    cache.notifyEvent.on('gacPay/gainBeanNotify', this._onGainBeanNotifyHandler);
+
     if (this.createNode) {
       let busy = false;
       this.createNode.on(cc.Node.EventType.TOUCH_END, (evn: cc.Event) => {
@@ -212,6 +231,20 @@ export default class Hall extends cc.Component {
         uiTools.closeWindow(this.node);
       }
     });
+  }
+
+  /**
+   * 点击充值按钮。
+   */
+  onClickRecharge() {
+    if (cache.channel !== 'default') {
+      uiTools.openWindow('prefab/recharge').catch((err) => {
+        cc.error(err);
+        uiTools.toast('打开充值界面失败');
+      });
+    } else {
+      uiTools.toast('请使用钱包方式登入游戏');
+    }
   }
 
   /**

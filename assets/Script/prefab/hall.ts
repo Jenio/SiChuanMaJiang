@@ -275,7 +275,10 @@ export default class Hall extends cc.Component {
    * 点击声明按钮。
    */
   onClickAnnouncement() {
-    uiTools.toast('暂未开放');
+    uiTools.openWindow('prefab/announcement').catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开规则界面失败');
+    });
   }
 
   /**

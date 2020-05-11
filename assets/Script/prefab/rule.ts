@@ -7,16 +7,16 @@ const { ccclass, property } = cc._decorator;
 export default class Rule extends cc.Component {
 
   /**
-   * 规则展开按钮节点。
+   * 规则按钮节点。
    */
   @property(cc.Node)
-  ruleExpandBtnNode: cc.Node = null;
+  ruleBtnNode: cc.Node = null;
 
   /**
-   * 番型展开按钮节点。
+   * 番型按钮节点。
    */
   @property(cc.Node)
-  fanExpandBtnNode: cc.Node = null;
+  fanBtnNode: cc.Node = null;
 
   /**
    * 规则内容节点。
@@ -30,26 +30,39 @@ export default class Rule extends cc.Component {
   @property(cc.Node)
   fanContentNode: cc.Node = null;
 
-  onClickExpand() {
-    if (this.ruleExpandBtnNode) {
-      if (this.ruleExpandBtnNode.angle === 0) {
-        this.ruleExpandBtnNode.angle = 180;
-      } else {
-        this.ruleExpandBtnNode.angle = 0;
-      }
+  /**
+   * 点击基本玩法按钮的处理。
+   */
+  onClickRuleButton() {
+    if (this.ruleBtnNode && !this.ruleBtnNode.active) {
+      this.ruleBtnNode.active = true;
     }
-    if (this.fanExpandBtnNode) {
-      if (this.fanExpandBtnNode.angle === 0) {
-        this.fanExpandBtnNode.angle = 180;
-      } else {
-        this.fanExpandBtnNode.angle = 0;
-      }
+    if (this.fanBtnNode && this.fanBtnNode.active) {
+      this.fanBtnNode.active = false;
     }
-    if (this.ruleContentNode) {
-      this.ruleContentNode.active = !this.ruleContentNode.active;
+    if (this.ruleContentNode && !this.ruleContentNode.active) {
+      this.ruleContentNode.active = true;
     }
-    if (this.fanContentNode) {
-      this.fanContentNode.active = !this.fanContentNode.active;
+    if (this.fanContentNode && this.fanContentNode.active) {
+      this.fanContentNode.active = false;
+    }
+  }
+
+  /**
+   * 点击基本番型按钮的处理。
+   */
+  onClickFanButton() {
+    if (this.ruleBtnNode && this.ruleBtnNode.active) {
+      this.ruleBtnNode.active = false;
+    }
+    if (this.fanBtnNode && !this.fanBtnNode.active) {
+      this.fanBtnNode.active = true;
+    }
+    if (this.ruleContentNode && this.ruleContentNode.active) {
+      this.ruleContentNode.active = false;
+    }
+    if (this.fanContentNode && !this.fanContentNode.active) {
+      this.fanContentNode.active = true;
     }
   }
 }

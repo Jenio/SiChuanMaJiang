@@ -285,6 +285,9 @@ export default class Hall extends cc.Component {
    * 点击设置按钮。
    */
   onClickSetup() {
-    uiTools.toast('暂未开放');
+    uiTools.openWindow('prefab/setup').catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开设置界面失败');
+    });
   }
 }

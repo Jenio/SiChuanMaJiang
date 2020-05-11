@@ -11,6 +11,16 @@ namespace cache {
   export let gacSdk: GacSdk | undefined;
 
   /**
+   * 音乐是否开启。
+   */
+  export let musicOn = true;
+
+  /**
+   * 音效是否开启。
+   */
+  export let soundOn = true;
+
+  /**
    * 渠道（运行时会检测并更新为相应的渠道）。
    */
   export let channel = 'default';

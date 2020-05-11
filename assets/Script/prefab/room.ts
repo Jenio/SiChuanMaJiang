@@ -120,6 +120,12 @@ export interface RoomInfo {
 export default class Room extends cc.Component {
 
   /**
+   * 背景音乐。
+   */
+  @property(cc.AudioSource)
+  bkgndAudio: cc.AudioSource = null;
+
+  /**
    * 房间ID文本框。
    */
   @property(cc.Label)
@@ -183,6 +189,8 @@ export default class Room extends cc.Component {
   private _destroyedByOwnerNotifyHandler = this._onDestroyedByOwnerNotify.bind(this);
   private _readyStateChangedNotifyHandler = this._onReadyStateChangedNotify.bind(this);
 
+  private _musicSwitchChangedHandler = this._onMusicSwitchChanged.bind(this);
+
   /**
    * 是否房主只读属性。
    */
@@ -245,10 +253,17 @@ export default class Room extends cc.Component {
     cache.notifyEvent.on('room/kickedNotify', this._kickedNotifyHandler);
     cache.notifyEvent.on('room/destroyedByOwnerNotify', this._destroyedByOwnerNotifyHandler);
     cache.notifyEvent.on('room/readyStateChangedNotify', this._readyStateChangedNotifyHandler);
+    cache.otherEvent.on('musicSwitchChanged', this._musicSwitchChangedHandler);
     this.node.on('kick', (evn: cc.Event) => {
       let uid = uiTools.getEventUserData(evn);
       this.onKick(uid);
     });
+  }
+
+  start() {
+    if (this.bkgndAudio && cache.musicOn) {
+      this.bkgndAudio.play();
+    }
   }
 
   onDestroy() {
@@ -257,6 +272,19 @@ export default class Room extends cc.Component {
     cache.notifyEvent.off('room/kickedNotify', this._kickedNotifyHandler);
     cache.notifyEvent.off('room/destroyedByOwnerNotify', this._destroyedByOwnerNotifyHandler);
     cache.notifyEvent.off('room/readyStateChangedNotify', this._readyStateChangedNotifyHandler);
+    cache.otherEvent.off('musicSwitchChanged', this._musicSwitchChangedHandler);
+    if (this.bkgndAudio) {
+      this.bkgndAudio.stop();
+    }
+  }
+
+  private _onMusicSwitchChanged() {
+    if (this.bkgndAudio) {
+      this.bkgndAudio.stop();
+      if (cache.musicOn) {
+        this.bkgndAudio.play();
+      }
+    }
   }
 
   /**

@@ -85134,7 +85134,7 @@
     "_volume": 1,
     "_mute": false,
     "_loop": true,
-    "playOnLoad": true,
+    "playOnLoad": false,
     "preload": true,
     "_id": ""
   },
@@ -86743,6 +86743,9 @@
     },
     "huAudio": {
       "__id__": 2278
+    },
+    "bgmAudio": {
+      "__id__": 2281
     },
     "discardAudios": [
       {

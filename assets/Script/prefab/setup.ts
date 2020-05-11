@@ -60,6 +60,7 @@ export default class Setup extends cc.Component {
   onClickMusic() {
     cache.musicOn = !cache.musicOn;
     this._refresh();
+    cache.otherEvent.emit('musicSwitchChanged');
   }
 
   /**

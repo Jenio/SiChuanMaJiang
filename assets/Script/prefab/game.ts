@@ -467,6 +467,12 @@ export default class Game extends cc.Component {
   huAudio: cc.AudioSource = null;
 
   /**
+   * 背景音乐。
+   */
+  @property(cc.AudioSource)
+  bgmAudio: cc.AudioSource = null;
+
+  /**
    * 出牌声音（存放顺序依次为一万到九万，一锁到九锁，一筒到九筒）。
    */
   @property(cc.AudioSource)
@@ -497,6 +503,8 @@ export default class Game extends cc.Component {
   private _finishAllInningNotifyHandler = this._onFinishAllInningNotify.bind(this);
   private _keepAliveNotifyHandler = this._onKeepAliveNotify.bind(this);
   private _chatNotifyHandler = this._onChatNotify.bind(this);
+
+  private _musicSwitchChangedHandler = this._onMusicSwitchChanged.bind(this);
 
   /**
    * 是否已销毁。
@@ -590,6 +598,7 @@ export default class Game extends cc.Component {
       }
     });
     cache.otherEvent.on('newClient', this._newClientNotifyHandler);
+    cache.otherEvent.on('musicSwitchChanged', this._musicSwitchChangedHandler);
     cache.notifyEvent.on('game/queryNotify', this._queryNotifyHandler);
     cache.notifyEvent.on('game/startDealNotify', this._startDealNotifyHandler);
     cache.notifyEvent.on('game/startSkipOneNotify', this._startSkipOneNotifyHandler);
@@ -608,9 +617,16 @@ export default class Game extends cc.Component {
     this._sendQueryGame();
   }
 
+  start() {
+    if (this.bgmAudio && cache.musicOn) {
+      this.bgmAudio.play();
+    }
+  }
+
   onDestroy() {
     this._destroyed = true;
     cache.otherEvent.off('newClient', this._newClientNotifyHandler);
+    cache.otherEvent.off('musicSwitchChanged', this._musicSwitchChangedHandler);
     cache.notifyEvent.off('game/queryNotify', this._queryNotifyHandler);
     cache.notifyEvent.off('game/startDealNotify', this._startDealNotifyHandler);
     cache.notifyEvent.off('game/startSkipOneNotify', this._startSkipOneNotifyHandler);
@@ -626,6 +642,9 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
     cache.notifyEvent.off('game/chatNotify', this._chatNotifyHandler);
+    if (this.bgmAudio) {
+      this.bgmAudio.stop();
+    }
   }
 
   /**
@@ -1682,6 +1701,15 @@ export default class Game extends cc.Component {
     this._sendQueryGame();
   }
 
+  private _onMusicSwitchChanged() {
+    if (this.bgmAudio) {
+      this.bgmAudio.stop();
+      if (cache.musicOn) {
+        this.bgmAudio.play();
+      }
+    }
+  }
+
   private _onKeepAliveTimeout() {
     cc.log('keep alive timeout');
     if (this._keepAliveCmd) {
@@ -2478,7 +2506,7 @@ export default class Game extends cc.Component {
     let sdir = this._toScreenDir(dir);
 
     let audio = this.discardAudios[notify.cardId];
-    if (audio) {
+    if (audio && cache.soundOn) {
       audio.play();
     }
 
@@ -2722,7 +2750,7 @@ export default class Game extends cc.Component {
     let fromDir = fromDirChar(notify.fromDir);
 
     // 播放碰的声音。
-    if (this.pengAudio) {
+    if (this.pengAudio && cache.soundOn) {
       this.pengAudio.play();
     }
 
@@ -2794,7 +2822,7 @@ export default class Game extends cc.Component {
     let fromDir = fromDirChar(notify.fromDir);
 
     // 播放杠的声音。
-    if (this.gangAudio) {
+    if (this.gangAudio && cache.soundOn) {
       this.gangAudio.play();
     }
 
@@ -2856,7 +2884,7 @@ export default class Game extends cc.Component {
     let dir = fromDirChar(notify.dir);
 
     // 播放杠的声音。
-    if (this.gangAudio) {
+    if (this.gangAudio && cache.soundOn) {
       this.gangAudio.play();
     }
 
@@ -2910,7 +2938,7 @@ export default class Game extends cc.Component {
     let dir = fromDirChar(notify.dir);
 
     // 播放杠的声音。
-    if (this.gangAudio) {
+    if (this.gangAudio && cache.soundOn) {
       this.gangAudio.play();
     }
 
@@ -2957,7 +2985,7 @@ export default class Game extends cc.Component {
 
     // 如果有胡，那么播放胡的声音。
     if (notify.eastHu !== undefined || notify.northHu !== undefined || notify.westHu !== undefined || notify.southHu !== undefined) {
-      if (this.huAudio) {
+      if (this.huAudio && cache.soundOn) {
         this.huAudio.play();
       }
     }
@@ -3389,7 +3417,7 @@ export default class Game extends cc.Component {
       }
     }
     let audio = this.chatAudios[notify.chatId];
-    if (audio) {
+    if (audio && cache.soundOn) {
       audio.play();
     }
   }

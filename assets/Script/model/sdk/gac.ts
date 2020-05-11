@@ -15,14 +15,17 @@ function _onGetTemporaryCodeCallback(res: string) {
   }
 }
 
-function _getPaymentBackInfo(res: number) {
-  if (res === 0) {
+function _onPayoffInfoCallback(res: number) {
+  cc.log('_onPayoffInfoCallback');
+  cc.log(res);
+  let code = +res;
+  if (code === 0) {
     cache.sdkEvent.emit('gacPayFailed');
-  } else if (res === 1) {
+  } else if (code === 1) {
     cache.sdkEvent.emit('gacPaySuccess');
-  } else if (res === 2) {
+  } else if (code === 2) {
     cache.sdkEvent.emit('gacPayCanceled');
-  } else if (res === 3) {
+  } else if (code === 3) {
     cache.sdkEvent.emit('gacPayStarted');
   }
 }
@@ -71,7 +74,8 @@ export function gacDetectAndPrepare(): GacSdk | undefined {
     cc.log('devieceUtil is:');
     cc.log(devieceUtil);
     devieceUtil.onGetTemporaryCodeCallback = _onGetTemporaryCodeCallback;  // 设置登入的回调函数。
-    devieceUtil.getPaymentBackInfo = _getPaymentBackInfo;  // 设置支付的回调函数。
+    devieceUtil.getPaymentBackInfo = _onPayoffInfoCallback;  // 设置支付的回调函数。
+    devieceUtil.onPayoffInfoCallback = _onPayoffInfoCallback;  // 设置支付的回调函数。
   }
   cc.log('sdk is:');
   cc.log(sdk);

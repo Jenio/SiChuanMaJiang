@@ -251,23 +251,37 @@ export default class Hall extends cc.Component {
    * 点击活动按钮。
    */
   onClickActivity() {
+    uiTools.toast('暂未开放');
   }
 
   /**
    * 点击规则按钮。
    */
   onClickRule() {
+    uiTools.openWindow('prefab/rule').catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开规则界面失败');
+    });
   }
 
   /**
    * 点击战绩按钮。
    */
   onClickRecord() {
+    uiTools.toast('暂未开放');
+  }
+
+  /**
+   * 点击声明按钮。
+   */
+  onClickAnnouncement() {
+    uiTools.toast('暂未开放');
   }
 
   /**
    * 点击设置按钮。
    */
   onClickSetup() {
+    uiTools.toast('暂未开放');
   }
 }

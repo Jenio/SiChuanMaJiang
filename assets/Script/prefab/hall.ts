@@ -76,6 +76,11 @@ export default class Hall extends cc.Component {
   @property(cc.SpriteFrame)
   iconSpriteFrames: cc.SpriteFrame[] = [];
 
+  /**
+   * 是否正在打开设置界面。
+   */
+  private _openingSetup = false;
+
   private _onGainBeanNotifyHandler = this._onGainBeanNotify.bind(this);
 
   private _onGainBeanNotify(notify: {
@@ -285,9 +290,21 @@ export default class Hall extends cc.Component {
    * 点击设置按钮。
    */
   onClickSetup() {
-    uiTools.openWindow('prefab/setup').catch((err) => {
+    cache.cmd.execCmd('user/queryConfig', {}).then((res) => {
+      if (res.err !== undefined) {
+        uiTools.toast('获取配置失败');
+        return;
+      }
+      cache.musicOn = res.musicOn;
+      cache.soundOn = res.soundOn;
+
+      uiTools.openWindow('prefab/setup').catch((err) => {
+        cc.error(err);
+        uiTools.toast('打开设置界面失败');
+      });
+    }).catch((err) => {
       cc.error(err);
-      uiTools.toast('打开设置界面失败');
+      uiTools.toast('获取配置失败');
     });
   }
 }

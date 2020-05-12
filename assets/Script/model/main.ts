@@ -269,45 +269,6 @@ export default class Main extends cc.Component {
           return;
         }
 
-        /*
-        // 注册青苹果回调函数。
-        let self = this;
-        (<any>window).devieceUtil = {
-          onGetTemporaryCodeCallback: function (res: string) {
-            cc.log(res);
-
-            let obj = JSON.parse(res);
-            if (obj.code !== 200) {
-              uiTools.toast(`获取凭证失败，错误码：${obj.code}`);
-            } else {
-
-              // 登入并切换界面。
-              self._loginGac(obj.data.temporaryCode);
-
-              // 避免被青苹果多次调用。
-              (<any>window).devieceUtil = undefined;
-            }
-          }
-        };
-
-        // 尝试使用青苹果。
-        let androidSdk = (<any>window).native;
-        let iosSdk = (<any>window).webkit;
-        if (androidSdk !== undefined) {
-          if (androidSdk.getTemporaryCode) {
-            cache.channel = 'gac';
-            androidSdk.getTemporaryCode(cache.appId);
-            return;
-          }
-        } else if (iosSdk !== undefined) {
-          if (iosSdk.messageHandlers && iosSdk.messageHandlers.getTemporaryCode && iosSdk.messageHandlers.getTemporaryCode.postMessage) {
-            cache.channel = 'gac';
-            iosSdk.messageHandlers.getTemporaryCode.postMessage(cache.appId);
-            return;
-          }
-        }
-        */
-
         // 不存在SDK的情况，使用自有系统入口。
         uiTools.openWindow('prefab/entrance').then((node: cc.Node) => {
           if (this.loadingNode) {

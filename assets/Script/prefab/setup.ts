@@ -32,6 +32,9 @@ export default class Setup extends cc.Component {
   @property(cc.Node)
   soundCloseNode: cc.Node = null;
 
+  private _oldMusicOn?: boolean;
+  private _oldSoundOn?: boolean;
+
   /**
    * 刷新。
    */
@@ -52,6 +55,23 @@ export default class Setup extends cc.Component {
 
   onLoad() {
     this._refresh();
+
+    this._oldMusicOn = cache.musicOn;
+    this._oldSoundOn = cache.soundOn;
+
+    this.node.once('closed', (evn: cc.Event) => {
+      evn.stopPropagation();
+      if (cache.musicOn !== this._oldMusicOn || cache.soundOn !== this._oldSoundOn) {
+        cache.cmd.execCmd('user/setConfig', {
+          cfg: {
+            musicOn: cache.musicOn,
+            soundOn: cache.soundOn
+          }
+        }).catch((err) => {
+          cc.error(err);
+        });
+      }
+    });
   }
 
   /**

@@ -597,6 +597,12 @@ export default class Game extends cc.Component {
         this.dismissCountDown.show(300);
       }
     });
+  }
+
+  start() {
+    if (this.bgmAudio && cache.musicOn) {
+      this.bgmAudio.play();
+    }
     cache.otherEvent.on('newClient', this._newClientNotifyHandler);
     cache.otherEvent.on('musicSwitchChanged', this._musicSwitchChangedHandler);
     cache.notifyEvent.on('game/queryNotify', this._queryNotifyHandler);
@@ -615,12 +621,6 @@ export default class Game extends cc.Component {
     cache.notifyEvent.on('game/keepAliveNotify', this._keepAliveNotifyHandler);
     cache.notifyEvent.on('game/chatNotify', this._chatNotifyHandler);
     this._sendQueryGame();
-  }
-
-  start() {
-    if (this.bgmAudio && cache.musicOn) {
-      this.bgmAudio.play();
-    }
   }
 
   onDestroy() {
@@ -642,15 +642,17 @@ export default class Game extends cc.Component {
     cache.notifyEvent.off('game/finishAllInningNotify', this._finishAllInningNotifyHandler);
     cache.notifyEvent.off('game/keepAliveNotify', this._keepAliveNotifyHandler);
     cache.notifyEvent.off('game/chatNotify', this._chatNotifyHandler);
-    if (this.bgmAudio) {
-      this.bgmAudio.stop();
-    }
   }
 
   /**
    * 进入大厅。
    */
   private async _enterHall() {
+    cc.log('enterHall');
+
+    if (this._destroyed) {
+      return;
+    }
 
     // 清理。
     this._clearForNextInning();
@@ -694,7 +696,20 @@ export default class Game extends cc.Component {
       }
       uiTools.toast(tip);
 
-      //TODO 如果是2，那么需要与服务器协商关闭自己所在的房间。
+      // 房间不存在，那么与服务器协商关闭所在的房间。
+      if (res.err === 2) {
+        try {
+          var res2 = await cache.cmd.execCmd('room/abnormalDestroy', {
+            gameId: cache.gameId
+          });
+        } catch (err2) {
+          cc.error(err2);
+          return;
+        }
+        if (res2.err === undefined || res2.err === 2) {
+          this._enterHall();
+        }
+      }
     }
   }
 
@@ -2378,7 +2393,7 @@ export default class Game extends cc.Component {
       for (let cardId of hands) {
         this.myCardsController.addHandCard(cardId);
       }
-      if (notify.draw) {
+      if (notify.draw !== undefined) {
         this.myCardsController.setDrawCard(notify.draw);
       }
     }

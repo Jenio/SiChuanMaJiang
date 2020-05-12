@@ -75,7 +75,7 @@ export function gacDetectAndPrepare(): GacSdk | undefined {
     cc.log(devieceUtil);
     devieceUtil.onGetTemporaryCodeCallback = _onGetTemporaryCodeCallback;  // 设置登入的回调函数。
     devieceUtil.getPaymentBackInfo = _onPayoffInfoCallback;  // 设置支付的回调函数。
-    devieceUtil.onPayoffInfoCallback = _onPayoffInfoCallback;  // 设置支付的回调函数。
+    //devieceUtil.onPayoffInfoCallback = _onPayoffInfoCallback;  // 设置支付的回调函数。
   }
   cc.log('sdk is:');
   cc.log(sdk);

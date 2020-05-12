@@ -1,55 +1,55 @@
 
 xuanfeng.png
-size: 512,512
+size: 256,256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 ef_bai
   rotate: false
-  xy: 2, 2
-  size: 51, 51
-  orig: 51, 51
+  xy: 81, 87
+  size: 31, 31
+  orig: 31, 31
   offset: 0, 0
   index: -1
 eff_par_001
   rotate: false
-  xy: 132, 249
-  size: 64, 64
-  orig: 64, 64
+  xy: 81, 120
+  size: 38, 38
+  orig: 38, 38
   offset: 0, 0
   index: -1
 eff_z1
   rotate: false
-  xy: 2, 315
-  size: 128, 128
-  orig: 128, 128
+  xy: 2, 160
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1
 eff_z3
   rotate: false
-  xy: 262, 379
-  size: 64, 64
-  orig: 64, 64
+  xy: 160, 199
+  size: 38, 38
+  orig: 38, 38
   offset: 0, 0
   index: -1
 fb7f2bac_a
   rotate: false
-  xy: 2, 185
-  size: 128, 128
-  orig: 128, 128
+  xy: 2, 81
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1
 xf_z3
   rotate: false
-  xy: 132, 315
-  size: 128, 128
-  orig: 128, 128
+  xy: 81, 160
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1
 xf_z5
   rotate: false
-  xy: 2, 55
-  size: 128, 128
-  orig: 128, 128
+  xy: 2, 2
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1

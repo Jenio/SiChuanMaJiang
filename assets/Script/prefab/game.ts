@@ -2060,6 +2060,9 @@ export default class Game extends cc.Component {
       if (gi.pendingAction === PendingAction.FinishSkipOne) {
         if (this.skipOneUi) {
           this.skipOneUi.show();
+          if (this.myCardsController) {
+            this.skipOneUi.setRecommendSkipOneType(this.myCardsController.getRecommendSkipType());
+          }
         }
       }
     } else if (gi.state === 4) {  // 等待牌局结束。
@@ -2421,6 +2424,9 @@ export default class Game extends cc.Component {
     this._numCardsLeft = 55;
     if (this.skipOneUi) {
       this.skipOneUi.show();
+      if (this.myCardsController) {
+        this.skipOneUi.setRecommendSkipOneType(this.myCardsController.getRecommendSkipType());
+      }
     }
     if (this.cardWallNode) {
       this.cardWallNode.active = true;

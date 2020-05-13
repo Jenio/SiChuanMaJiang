@@ -1060,4 +1060,136 @@ export default class MjMyCardsController extends cc.Component {
 
     return pos;
   }
+
+  /**
+   * 计算定缺分。
+   * @param cards 卡牌，必须是同种类型的（例如都是筒）。
+   */
+  private _calcSkipOneScore(cards: CardId[]) {
+
+    // 检查重叠数量。
+    let cardCount: { [key: string]: number; } = {};
+    let maxCount = 0;
+    for (let c of cards) {
+      if (cardCount[c] === undefined) {
+        cardCount[c] = 1;
+        if (maxCount < 1) {
+          maxCount = 1;
+        }
+      } else {
+        cardCount[c]++;
+        if (maxCount < cardCount[c]) {
+          maxCount = cardCount[c];
+        }
+      }
+    }
+    if (maxCount === 4) {
+      return 100;  // 存在杠则100分。
+    } else if (maxCount === 3) {
+      return 90;  // 存在碰则90分。
+    }
+
+    // 存在两对则80分。
+    let doubleCount = 0;
+    for (let c in cardCount) {
+      if (cardCount[c] === 2) {
+        doubleCount++;
+      }
+    }
+    if (doubleCount) {
+      return 80;
+    }
+
+    // 存在对子则加5分。
+    let score = 0;
+    if (maxCount === 2) {
+      score += 5;
+    }
+
+    // 存在一个连着的加2分，连续连着的额外加2分。
+    let sortCards = cards.slice();
+    sortCards.sort();
+    let bonus = false;
+    for (let idx = 0; idx < sortCards.length - 1; ++idx) {
+      if (sortCards[idx] + 1 === sortCards[idx + 1]) {
+        score += 2;
+        if (bonus) {
+          score += 2;
+        }
+        bonus = true;
+      } else {
+        bonus = false;
+      }
+    }
+
+    return score;
+  }
+
+  /**
+   * 获取推荐的定缺牌类型。
+   */
+  getRecommendSkipType(): CardType {
+    let cards = this.getHandCards(true);
+    let wanCards: CardId[] = [];
+    let suoCards: CardId[] = [];
+    let tongCards: CardId[] = [];
+    for (let card of cards) {
+      if (card >= CardId.Wan1 && card <= CardId.Wan9) {
+        wanCards.push(card);
+      } else if (card >= CardId.Suo1 && card <= CardId.Suo9) {
+        suoCards.push(card);
+      } else if (card >= CardId.Tong1 && card <= CardId.Tong9) {
+        tongCards.push(card);
+      }
+    }
+    if (wanCards.length < suoCards.length && wanCards.length < tongCards.length) {
+      return CardType.Wan;
+    }
+    if (suoCards.length < wanCards.length && suoCards.length < tongCards.length) {
+      return CardType.Suo;
+    }
+    if (tongCards.length < wanCards.length && tongCards.length < suoCards.length) {
+      return CardType.Tong;
+    }
+    if (wanCards.length === suoCards.length) {
+      let wanScore = this._calcSkipOneScore(wanCards);
+      let suoScore = this._calcSkipOneScore(suoCards);
+      if (wanScore < suoScore) {
+        return CardType.Wan;
+      } else if (suoScore < wanScore) {
+        return CardType.Suo;
+      }
+      if (Math.random() < 0.5) {
+        return CardType.Wan;
+      }
+      return CardType.Suo;
+    }
+    if (wanCards.length === tongCards.length) {
+      let wanScore = this._calcSkipOneScore(wanCards);
+      let tongScore = this._calcSkipOneScore(tongCards);
+      if (wanScore < tongScore) {
+        return CardType.Wan;
+      } else if (tongScore < wanScore) {
+        return CardType.Tong;
+      }
+      if (Math.random() < 0.5) {
+        return CardType.Wan;
+      }
+      return CardType.Tong;
+    }
+    if (suoCards.length === tongCards.length) {
+      let suoScore = this._calcSkipOneScore(suoCards);
+      let tongScore = this._calcSkipOneScore(tongCards);
+      if (suoScore < tongScore) {
+        return CardType.Suo;
+      } else if (tongScore < suoScore) {
+        return CardType.Tong;
+      }
+      if (Math.random() < 0.5) {
+        return CardType.Suo;
+      }
+      return CardType.Tong;
+    }
+    throw new Error('enter code 1');
+  }
 }

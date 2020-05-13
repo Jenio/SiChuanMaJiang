@@ -1,6 +1,6 @@
-import { CardType } from "../../model/game/concept";
-import cache from "../../model/cache";
-import uiTools from "../../model/ui/tools";
+import { CardType } from '../../model/game/concept';
+import cache from '../../model/cache';
+import uiTools from '../../model/ui/tools';
 
 const { ccclass, property } = cc._decorator;
 
@@ -15,6 +15,42 @@ export default class MjSkipOneUi extends cc.Component {
    */
   @property(cc.Node)
   btnsNode: cc.Node = null;
+
+  /**
+   * 普通万节点。
+   */
+  @property(cc.Node)
+  normalWanNode: cc.Node = null;
+
+  /**
+   * 特效万节点。
+   */
+  @property(cc.Node)
+  effectWanNode: cc.Node = null;
+
+  /**
+   * 普通锁节点。
+   */
+  @property(cc.Node)
+  normalSuoNode: cc.Node = null;
+
+  /**
+   * 特效锁节点。
+   */
+  @property(cc.Node)
+  effectSuoNode: cc.Node = null;
+
+  /**
+   * 普通筒节点。
+   */
+  @property(cc.Node)
+  normalTongNode: cc.Node = null;
+
+  /**
+   * 特效筒节点。
+   */
+  @property(cc.Node)
+  effectTongNode: cc.Node = null;
 
   /**
    * 我的定缺状态节点。
@@ -44,6 +80,53 @@ export default class MjSkipOneUi extends cc.Component {
    * 是否忙。
    */
   private _busy = false;
+
+  /**
+   * 设置推荐的定缺类型。
+   * @param skipType 定缺的类型。
+   */
+  setRecommendSkipOneType(skipType: CardType) {
+    if (this.normalWanNode) {
+      this.normalWanNode.active = true;
+    }
+    if (this.effectWanNode) {
+      this.effectWanNode.active = false;
+    }
+    if (this.normalSuoNode) {
+      this.normalSuoNode.active = true;
+    }
+    if (this.effectSuoNode) {
+      this.effectSuoNode.active = false;
+    }
+    if (this.normalTongNode) {
+      this.normalTongNode.active = true;
+    }
+    if (this.effectTongNode) {
+      this.effectTongNode.active = false;
+    }
+    if (skipType === CardType.Wan) {
+      if (this.normalWanNode) {
+        this.normalWanNode.active = false;
+      }
+      if (this.effectWanNode) {
+        this.effectWanNode.active = true;
+      }
+    } else if (skipType === CardType.Suo) {
+      if (this.normalSuoNode) {
+        this.normalSuoNode.active = false;
+      }
+      if (this.effectSuoNode) {
+        this.effectSuoNode.active = true;
+      }
+    } else if (skipType === CardType.Tong) {
+      if (this.normalTongNode) {
+        this.normalTongNode.active = false;
+      }
+      if (this.effectTongNode) {
+        this.effectTongNode.active = true;
+      }
+    }
+  }
 
   /**
    * 显示。

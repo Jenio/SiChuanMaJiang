@@ -1,62 +1,62 @@
 
 xiayu.png
-size: 512,256
+size: 256,128
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 di_yuhua_00001
   rotate: false
-  xy: 2, 56
-  size: 81, 52
-  orig: 81, 52
+  xy: 2, 9
+  size: 49, 31
+  orig: 49, 31
   offset: 0, 0
   index: -1
 di_yuhua_00002
   rotate: false
-  xy: 262, 186
-  size: 81, 52
-  orig: 81, 52
+  xy: 160, 88
+  size: 49, 31
+  orig: 49, 31
   offset: 0, 0
   index: -1
 di_yuhua_00003
   rotate: false
-  xy: 2, 2
-  size: 81, 52
-  orig: 81, 52
+  xy: 53, 9
+  size: 49, 31
+  orig: 49, 31
   offset: 0, 0
   index: -1
 di_yuhua_00004
   rotate: false
-  xy: 85, 56
-  size: 81, 52
-  orig: 81, 52
+  xy: 160, 55
+  size: 49, 31
+  orig: 49, 31
   offset: 0, 0
   index: -1
 di_yuhua_00005
-  rotate: false
-  xy: 262, 132
-  size: 81, 52
-  orig: 81, 52
+  rotate: true
+  xy: 211, 70
+  size: 49, 31
+  orig: 49, 31
   offset: 0, 0
   index: -1
 yan_c
   rotate: false
-  xy: 2, 110
-  size: 128, 128
-  orig: 128, 128
+  xy: 2, 42
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1
 yuquan
   rotate: false
-  xy: 132, 110
-  size: 128, 128
-  orig: 128, 128
+  xy: 81, 42
+  size: 77, 77
+  orig: 77, 77
   offset: 0, 0
   index: -1
 yusi_1
   rotate: false
-  xy: 345, 174
-  size: 64, 64
-  orig: 64, 64
+  xy: 104, 2
+  size: 38, 38
+  orig: 38, 38
   offset: 0, 0
   index: -1

@@ -597,6 +597,31 @@ export default class Game extends cc.Component {
         this.dismissCountDown.show(300);
       }
     });
+    this.node.on('playSkipOneAnim', (evn: cc.Event) => {
+      evn.stopPropagation();
+      let data = uiTools.getEventUserData(evn);
+      let worldPos: cc.Vec3 = data.worldPos;
+      let node: cc.Node = data.node;
+      let skipType: CardType = data.skipType;
+      if (this.myInfo) {
+        let fromPos = this.node.convertToNodeSpaceAR(worldPos);
+        let toPos = this.myInfo.getSkipTypePos(this.node);
+        node.position = fromPos;
+        node.active = true;
+        this.node.addChild(node);
+        let fromW = node.width;
+        let fromH = node.height;
+        let size = this.myInfo.getSkipTypeSize();
+        let scaleX = size.width / fromW;
+        let scaleY = size.height / fromH;
+        let moveTo = cc.moveTo(0.3, toPos.x, toPos.y);
+        let zoomTo = cc.scaleTo(0.3, scaleX, scaleY);
+        node.runAction(cc.sequence(cc.spawn(moveTo, zoomTo), cc.callFunc(() => {
+          node.removeFromParent(true);
+          this.myInfo.setQue(skipType);
+        })));
+      }
+    });
   }
 
   start() {
@@ -2469,14 +2494,16 @@ export default class Game extends cc.Component {
     // 更新定缺。
     for (let x of notify.skipOnes) {
       let dir = fromDirChar(x.dir);
-      let ui = this._getPlayerInfo(dir);
-      if (ui) {
-        if (x.skipType === 'wan') {
-          ui.setQue(CardType.Wan);
-        } else if (x.skipType === 'suo') {
-          ui.setQue(CardType.Suo);
-        } else if (x.skipType === 'tong') {
-          ui.setQue(CardType.Tong);
+      if (dir !== this._myDir) {  // 自己的定缺标记不在此时显示，它在用户选中定缺时提前显示了。
+        let ui = this._getPlayerInfo(dir);
+        if (ui) {
+          if (x.skipType === 'wan') {
+            ui.setQue(CardType.Wan);
+          } else if (x.skipType === 'suo') {
+            ui.setQue(CardType.Suo);
+          } else if (x.skipType === 'tong') {
+            ui.setQue(CardType.Tong);
+          }
         }
       }
       if (dir === this._myDir) {

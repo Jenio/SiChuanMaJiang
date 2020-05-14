@@ -269,4 +269,26 @@ export default class MjUser extends cc.Component {
       this.chatLabel.string = txt;
     }
   }
+
+  /**
+   * 获取定缺节点所在的位置。
+   * @param at 目标坐标系节点。
+   */
+  getSkipTypePos(at: cc.Node): cc.Vec3 {
+    if (this.queSprite) {
+      let worldPos = this.queSprite.node.convertToWorldSpaceAR(cc.v3(0, 0, 0));
+      return at.convertToNodeSpaceAR(worldPos);
+    }
+    return cc.v3(0, 0, 0);
+  }
+
+  /**
+   * 获取定缺节点的尺寸。
+   */
+  getSkipTypeSize(): cc.Size {
+    if (this.queSprite) {
+      return cc.size(this.queSprite.node.width, this.queSprite.node.height);
+    }
+    return cc.size(0, 0);
+  }
 }

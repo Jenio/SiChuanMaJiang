@@ -226,6 +226,17 @@ export default class MjSkipOneUi extends cc.Component {
     this._hideBtns();
     this._sendFinishSkipOne(CardType.Wan).then(() => {
       this._setMyDone();
+
+      // 派发定缺消息。
+      if (this.effectWanNode) {
+        var pos = this.effectWanNode.convertToWorldSpaceAR(cc.v3(0, 0, 0));
+        uiTools.fireEvent(this.node, 'playSkipOneAnim', {
+          worldPos: pos,
+          node: cc.instantiate(this.effectWanNode),
+          skipType: CardType.Wan
+        }, true);
+      }
+
     }).catch((err) => {
       cc.warn(err);
       this._showBtns();
@@ -242,6 +253,16 @@ export default class MjSkipOneUi extends cc.Component {
     this._hideBtns();
     this._sendFinishSkipOne(CardType.Suo).then(() => {
       this._setMyDone();
+
+      // 派发定缺消息。
+      if (this.effectSuoNode) {
+        var pos = this.effectSuoNode.convertToWorldSpaceAR(cc.v3(0, 0, 0));
+        uiTools.fireEvent(this.node, 'playSkipOneAnim', {
+          worldPos: pos,
+          node: cc.instantiate(this.effectSuoNode),
+          skipType: CardType.Suo
+        }, true);
+      }
     }).catch((err) => {
       cc.warn(err);
       this._showBtns();
@@ -258,6 +279,16 @@ export default class MjSkipOneUi extends cc.Component {
     this._hideBtns();
     this._sendFinishSkipOne(CardType.Tong).then(() => {
       this._setMyDone();
+
+      // 派发定缺消息。
+      if (this.effectTongNode) {
+        var pos = this.effectTongNode.convertToWorldSpaceAR(cc.v3(0, 0, 0));
+        uiTools.fireEvent(this.node, 'playSkipOneAnim', {
+          worldPos: pos,
+          node: cc.instantiate(this.effectTongNode),
+          skipType: CardType.Tong
+        }, true);
+      }
     }).catch((err) => {
       cc.warn(err);
       this._showBtns();

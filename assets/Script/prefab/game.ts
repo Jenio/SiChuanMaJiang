@@ -389,6 +389,36 @@ export default class Game extends cc.Component {
   rightQiangGangHuAnim: cc.Animation = null;
 
   /**
+   * 下雨特效（包含大雨和小雨）。
+   */
+  @property(sp.Skeleton)
+  xiaYuSkeleton: sp.Skeleton = null;
+
+  /**
+   * 我（被）刮风的特效。
+   */
+  @property(sp.Skeleton)
+  myGuaFengEffect: sp.Skeleton = null;
+
+  /**
+   * 上方玩家（被）刮风的特效。
+   */
+  @property(sp.Skeleton)
+  topGuaFengEffect: sp.Skeleton = null;
+
+  /**
+   * 左侧玩家（被）刮风的特效。
+   */
+  @property(sp.Skeleton)
+  leftGuaFengEffect: sp.Skeleton = null;
+
+  /**
+   * 右侧玩家（被）刮风的特效。
+   */
+  @property(sp.Skeleton)
+  rightGuaFengEffect: sp.Skeleton = null;
+
+  /**
    * 听按钮节点。
    */
   @property(cc.Node)
@@ -2934,6 +2964,40 @@ export default class Game extends cc.Component {
       }
     }
     this._playGangEffect(sdir);
+    let sdirFrom = this._toScreenDir(fromDir);
+    if (sdirFrom === ScreenDirection.Bottom) {
+      if (this.myGuaFengEffect) {
+        if (!this.myGuaFengEffect.node.active) {
+          this.myGuaFengEffect.node.active = true;
+        }
+        this.myGuaFengEffect.clearTrack(0);
+        this.myGuaFengEffect.setAnimation(0, 'animation', false);
+      }
+    } else if (sdirFrom === ScreenDirection.Top) {
+      if (this.topGuaFengEffect) {
+        if (!this.topGuaFengEffect.node.active) {
+          this.topGuaFengEffect.node.active = true;
+        }
+        this.topGuaFengEffect.clearTrack(0);
+        this.topGuaFengEffect.setAnimation(0, 'animation', false);
+      }
+    } else if (sdirFrom === ScreenDirection.Left) {
+      if (this.leftGuaFengEffect) {
+        if (!this.leftGuaFengEffect.node.active) {
+          this.leftGuaFengEffect.node.active = true;
+        }
+        this.leftGuaFengEffect.clearTrack(0);
+        this.leftGuaFengEffect.setAnimation(0, 'animation', false);
+      }
+    } else if (sdirFrom === ScreenDirection.Right) {
+      if (this.rightGuaFengEffect) {
+        if (!this.rightGuaFengEffect.node.active) {
+          this.rightGuaFengEffect.node.active = true;
+        }
+        this.rightGuaFengEffect.clearTrack(0);
+        this.rightGuaFengEffect.setAnimation(0, 'animation', false);
+      }
+    }
   }
 
   private async _onBuGangNotify(notify: BuGangNotify) {
@@ -2976,6 +3040,13 @@ export default class Game extends cc.Component {
       }
     }
     this._playGangEffect(sdir);
+    if (this.xiaYuSkeleton) {
+      if (!this.xiaYuSkeleton.node.active) {
+        this.xiaYuSkeleton.node.active = true;
+      }
+      this.xiaYuSkeleton.clearTrack(0);
+      this.xiaYuSkeleton.setAnimation(0, 'xiaoyu', false);
+    }
 
     // 如果是其他三家补杠，那么需要计算是否有抢杠胡，如果有，那么弹出UI。
     if (sdir !== ScreenDirection.Bottom) {
@@ -3030,6 +3101,13 @@ export default class Game extends cc.Component {
       }
     }
     this._playGangEffect(sdir);
+    if (this.xiaYuSkeleton) {
+      if (!this.xiaYuSkeleton.node.active) {
+        this.xiaYuSkeleton.node.active = true;
+      }
+      this.xiaYuSkeleton.clearTrack(0);
+      this.xiaYuSkeleton.setAnimation(0, 'dayu', false);
+    }
   }
 
   private _onFinishInningNotify(notify: FinishInningNotify) {

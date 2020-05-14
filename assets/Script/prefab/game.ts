@@ -2446,10 +2446,31 @@ export default class Game extends cc.Component {
         }
       }
       if (this._bankerDir !== this._myDir) {
-        this.myCoversNode.children[0].active = false;
+        if (this.myCoversNode.children[13]) {
+          this.myCoversNode.children[13].active = false;
+        }
+      }
+      let hands = notify.hands.slice();
+      hands.sort((a, b) => {
+        return a - b;
+      });
+      if (notify.draw !== undefined) {
+        hands.push(notify.draw);
+      }
+      for (let child of this.myCoversNode.children) {
+        if (child.active) {
+          let c = child.getComponent(MjCard);
+          if (c) {
+            c.setup(hands.shift(), false);
+          }
+          let anim = child.getComponent(cc.Animation);
+          if (anim) {
+            anim.play();
+          }
+        }
       }
     }
-    await new Promise(res => setTimeout(res, 500));
+    await new Promise(res => setTimeout(res, 600));
     if (this._destroyed) {
       return;
     }

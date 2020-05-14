@@ -84,27 +84,35 @@ export default class Entrance extends cc.Component {
   }
 
   private async _loadUserInfo() {
-    let res = await cache.cmd.execCmd('user/queryState', {
+
+    // 查询并更新设置。
+    let res = await cache.cmd.execCmd('user/queryConfig', {});
+    if (res.err === undefined) {
+      cache.musicOn = res.musicOn;
+      cache.soundOn = res.soundOn;
+    }
+
+    let res2 = await cache.cmd.execCmd('user/queryState', {
       gameId: cache.gameId
     });
-    if (res.err !== undefined) {
-      if (res.err === 1) {
+    if (res2.err !== undefined) {
+      if (res2.err === 1) {
         uiTools.toast('内部错误');
       } else {
         uiTools.toast('未知错误');
       }
       return;
     }
-    let state = res.state;
-    let uid = res.uid;
+    let state = res2.state;
+    let uid = res2.uid;
     cache.uid = uid;
     if (state === 1) {  // 还未创建账号。
 
       // 创角。
       let name = `游客${uid}`;
       let icon = '0';  //TODO 随机选择一个头像。
-      let res2 = await cache.cmd.execCmd('user/create', { name, icon });
-      if (res2.err !== undefined) {
+      let res3 = await cache.cmd.execCmd('user/create', { name, icon });
+      if (res3.err !== undefined) {
         uiTools.toast('未知错误');
         return;
       }
@@ -129,15 +137,15 @@ export default class Entrance extends cc.Component {
     } else if (state === 3) {  // 在某个房间内。
 
       // 查询我所在的房间信息。
-      let res2 = await cache.cmd.execCmd('room/queryMine', {
+      let res3 = await cache.cmd.execCmd('room/queryMine', {
         gameId: cache.gameId
       });
-      if (res2.err !== undefined) {
+      if (res3.err !== undefined) {
         uiTools.toast('未知错误');
         return;
       }
-      cache.roomId = res2.id;
-      cache.route = res2.route;
+      cache.roomId = res3.id;
+      cache.route = res3.route;
 
       // 不存在游戏路由则进入房间，否则进入游戏。
       if (cache.route === '') {
@@ -149,7 +157,7 @@ export default class Entrance extends cc.Component {
         }
         let c = node.getComponent(Room);
         if (c) {
-          c.setRoomInfo(res2);
+          c.setRoomInfo(res3);
         }
         uiTools.closeWindow(this.node);
       } else {

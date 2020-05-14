@@ -395,6 +395,12 @@ export default class Game extends cc.Component {
   tingNode: cc.Node = null;
 
   /**
+   * 菜单节点。
+   */
+  @property(cc.Node)
+  menuNode: cc.Node = null;
+
+  /**
    * 我的信息。
    */
   @property(MjUser)
@@ -586,6 +592,11 @@ export default class Game extends cc.Component {
    */
   private _lastNotifySn = -1;
 
+  /**
+   * 设置界面节点。
+   */
+  private _setupNode?: cc.Node;
+
   onLoad() {
     this.node.on('notFoundRoom', (evn: cc.Event) => {
       evn.stopPropagation();
@@ -681,6 +692,12 @@ export default class Game extends cc.Component {
 
     // 清理。
     this._clearForNextInning();
+
+    // 如果设置界面开启中，那么关闭设置界面。
+    if (this._setupNode) {
+      uiTools.closeWindow(this._setupNode);
+      this._setupNode = undefined;
+    }
 
     // 进入大厅。
     try {
@@ -3467,6 +3484,47 @@ export default class Game extends cc.Component {
     let audio = this.chatAudios[notify.chatId];
     if (audio && cache.soundOn) {
       audio.play();
+    }
+  }
+
+  /**
+   * 点击菜单按钮的处理。
+   */
+  onClickMenu() {
+    if (this.menuNode) {
+      this.menuNode.active = true;
+    }
+  }
+
+  /**
+   * 点击菜单中的设置按钮。
+   */
+  onClickSetup() {
+    if (!this._setupNode) {
+      uiTools.openWindow('prefab/setup').then((node) => {
+        this._setupNode = node;
+        node.once('closed', (evn: cc.Event) => {
+          evn.stopPropagation();
+          this._setupNode = undefined;
+        });
+
+        // 关闭菜单。
+        if (this.menuNode) {
+          this.menuNode.active = false;
+        }
+      }).catch((err) => {
+        cc.error(err);
+        uiTools.toast('打开设置界面失败');
+      });
+    }
+  }
+
+  /**
+   * 点击菜单中的退出按钮。
+   */
+  onClickQuitMenu() {
+    if (this.menuNode) {
+      this.menuNode.active = false;
     }
   }
 

@@ -290,21 +290,9 @@ export default class Hall extends cc.Component {
    * 点击设置按钮。
    */
   onClickSetup() {
-    cache.cmd.execCmd('user/queryConfig', {}).then((res) => {
-      if (res.err !== undefined) {
-        uiTools.toast('获取配置失败');
-        return;
-      }
-      cache.musicOn = res.musicOn;
-      cache.soundOn = res.soundOn;
-
-      uiTools.openWindow('prefab/setup').catch((err) => {
-        cc.error(err);
-        uiTools.toast('打开设置界面失败');
-      });
-    }).catch((err) => {
+    uiTools.openWindow('prefab/setup').catch((err) => {
       cc.error(err);
-      uiTools.toast('获取配置失败');
+      uiTools.toast('打开设置界面失败');
     });
   }
 }

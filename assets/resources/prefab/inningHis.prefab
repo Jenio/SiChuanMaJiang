@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "announcement",
+    "_name": "inningHis",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -27,17 +27,20 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 34
-      },
-      {
         "__id__": 35
       },
       {
         "__id__": 36
+      },
+      {
+        "__id__": 37
+      },
+      {
+        "__id__": 38
       }
     ],
     "_prefab": {
-      "__id__": 37
+      "__id__": 39
     },
     "_opacity": 255,
     "_color": {
@@ -218,7 +221,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "dcfaL1INNFc6immXI7U9xV",
     "sync": false
@@ -241,11 +244,11 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 32
+        "__id__": 33
       }
     ],
     "_prefab": {
-      "__id__": 33
+      "__id__": 34
     },
     "_opacity": 255,
     "_color": {
@@ -257,8 +260,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 930,
-      "height": 386
+      "width": 966,
+      "height": 580
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -328,7 +331,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 930,
+      "width": 966,
       "height": 58
     },
     "_anchorPoint": {
@@ -341,7 +344,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        164,
+        261,
         0,
         0,
         0,
@@ -443,8 +446,8 @@
       }
     ],
     "_useOriginalSize": true,
-    "_string": "声 明",
-    "_N$string": "声 明",
+    "_string": "战 绩",
+    "_N$string": "战 绩",
     "_fontSize": 34,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -467,7 +470,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "00xVpiZz9AbpdseP/+hE38",
     "sync": false
@@ -514,7 +517,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        429,
+        447,
         0,
         0,
         0,
@@ -604,7 +607,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "e7A2RbeRJIS5U6YTl3UdBY",
     "sync": false
@@ -647,7 +650,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "ac854cot9DZrxoAEvezAD2",
     "sync": false
@@ -667,11 +670,11 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 30
+        "__id__": 31
       }
     ],
     "_prefab": {
-      "__id__": 31
+      "__id__": 32
     },
     "_opacity": 255,
     "_color": {
@@ -683,8 +686,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 930,
-      "height": 328
+      "width": 966,
+      "height": 522
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -742,7 +745,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 29
+      "__id__": 30
     },
     "_opacity": 255,
     "_color": {
@@ -754,8 +757,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 870,
-      "height": 268
+      "width": 906,
+      "height": 462
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -825,8 +828,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 870,
-      "height": 268
+      "width": 906,
+      "height": 462
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -892,8 +895,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 870,
-      "height": 232.32
+      "width": 906,
+      "height": 0
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -905,7 +908,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        134,
+        231,
         0,
         0,
         0,
@@ -957,35 +960,36 @@
     "_id": ""
   },
   {
-    "__type__": "cc.Label",
+    "__type__": "cc.Layout",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 20
     },
     "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_useOriginalSize": true,
-    "_string": "关于结算分数：\n每局胡牌或者流局后进行结算，获得的分数是对每盘对局的分数记录，在牌局结束后将清零，不具有任何价值。\n\n禁止事项：\n我们倡导熟人好友之间的娱乐消遣，禁止任何形式的赌博行为。\n",
-    "_N$string": "关于结算分数：\n每局胡牌或者流局后进行结算，获得的分数是对每盘对局的分数记录，在牌局结束后将清零，不具有任何价值。\n\n禁止事项：\n我们倡导熟人好友之间的娱乐消遣，禁止任何形式的赌博行为。\n",
-    "_fontSize": 24,
-    "_lineHeight": 32,
-    "_enableWrapText": true,
-    "_N$file": null,
-    "_isSystemFontUsed": true,
-    "_spacingX": 0,
-    "_batchAsBitmap": false,
-    "_styleFlags": 0,
-    "_underlineHeight": 0,
-    "_N$horizontalAlign": 0,
-    "_N$verticalAlign": 0,
-    "_N$fontFamily": "Arial",
-    "_N$overflow": 3,
-    "_N$cacheMode": 1,
+    "_layoutSize": {
+      "__type__": "cc.Size",
+      "width": 300,
+      "height": 200
+    },
+    "_resize": 1,
+    "_N$layoutType": 2,
+    "_N$padding": 0,
+    "_N$cellSize": {
+      "__type__": "cc.Size",
+      "width": 40,
+      "height": 40
+    },
+    "_N$startAxis": 0,
+    "_N$paddingLeft": 0,
+    "_N$paddingRight": 0,
+    "_N$paddingTop": 0,
+    "_N$paddingBottom": 0,
+    "_N$spacingX": 0,
+    "_N$spacingY": 0,
+    "_N$verticalDirection": 1,
+    "_N$horizontalDirection": 0,
+    "_N$affectedByScale": false,
     "_id": ""
   },
   {
@@ -994,7 +998,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "31IR50y19JrrcYmYsfo6pK",
     "sync": false
@@ -1052,7 +1056,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "30NHIcAHVMJ5Oe/cd+SHgm",
     "sync": false
@@ -1098,7 +1102,11 @@
     "brake": 0.75,
     "elastic": true,
     "bounceDuration": 0.23,
-    "scrollEvents": [],
+    "scrollEvents": [
+      {
+        "__id__": 29
+      }
+    ],
     "cancelInnerEvents": true,
     "_N$content": {
       "__id__": 20
@@ -1111,12 +1119,22 @@
     "_id": ""
   },
   {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 1
+    },
+    "component": "",
+    "_componentId": "70882vLH8dL8o96YGAaLvzj",
+    "handler": "onScrollEvent",
+    "customEventData": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "feOOrKGLdAA5h57EF/ONtB",
     "sync": false
@@ -1159,7 +1177,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "dd0TCtEg1FgYjKXpRk0EU1",
     "sync": false
@@ -1174,8 +1192,8 @@
     "_enabled": true,
     "_layoutSize": {
       "__type__": "cc.Size",
-      "width": 930,
-      "height": 386
+      "width": 966,
+      "height": 580
     },
     "_resize": 1,
     "_N$layoutType": 2,
@@ -1203,7 +1221,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "aac3eLHsVDIJzAbeyObtyQ",
     "sync": false
@@ -1317,12 +1335,31 @@
     "_id": ""
   },
   {
+    "__type__": "70882vLH8dL8o96YGAaLvzj",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "scrollView": {
+      "__id__": 28
+    },
+    "recordPrefab": {
+      "__uuid__": "393f31cb-8b29-4009-9804-daecd0e192c9"
+    },
+    "separatorPrefab": {
+      "__uuid__": "60a54d22-dee9-4a7c-8981-331105cd119c"
+    },
+    "_id": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "a8ef62ab-6823-4dbe-a598-f26dae85e65d"
+      "__uuid__": "af6593bc-61a1-4ec7-a0f0-1b6e7d005921"
     },
     "fileId": "f5somMZ3RMKqLKQUeLYVpI",
     "sync": false

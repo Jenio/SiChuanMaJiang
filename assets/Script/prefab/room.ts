@@ -132,6 +132,18 @@ export default class Room extends cc.Component {
   roomIdLabel: cc.Label = null;
 
   /**
+   * 局数文本框。
+   */
+  @property(cc.Label)
+  inningsLabel: cc.Label = null;
+
+  /**
+   * 其他配置文本框。
+   */
+  @property(cc.Label)
+  otherConfigLabel: cc.Label = null;
+
+  /**
    * 就绪按钮文本图片精灵。
    */
   @property(cc.Sprite)
@@ -208,6 +220,21 @@ export default class Room extends cc.Component {
     if (this._ri) {
       if (this.roomIdLabel) {
         this.roomIdLabel.string = this._ri.id;
+      }
+      if (this.inningsLabel) {
+        this.inningsLabel.string = this._ri.config.innings.toString();
+      }
+      if (this.otherConfigLabel) {
+        let cfg = this._ri.config;
+        if (cfg.config.fanLimit === 0) {
+          var str = `不封顶，底分${cfg.baseScore}分`;
+        } else {
+          var str = `${cfg.config.fanLimit}番，底分${cfg.baseScore}分`;
+        }
+        if (cfg.config.skipOne) {
+          str += '，定缺';
+        }
+        this.otherConfigLabel.string = str;
       }
       if (this.iAmOwner) {
         if (this.leaveTxtSprite && this.destroySpriteFrame) {

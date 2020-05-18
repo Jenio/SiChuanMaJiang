@@ -6,6 +6,9 @@ import { gacDetectAndPrepare } from './sdk/gac';
 
 const { ccclass, property } = cc._decorator;
 
+class TokenExpiredError extends Error {
+}
+
 @ccclass
 export default class Main extends cc.Component {
 
@@ -57,6 +60,12 @@ export default class Main extends cc.Component {
     if (res.err !== undefined) {
       cmd.close();
       cmd = undefined;
+
+      // 凭证已过期则抛特定的异常。
+      if (res.err === 6) {
+        throw new TokenExpiredError('凭证已过期');
+      }
+
       if (toast) {
         let tips = {
           1: '参数错误',
@@ -64,7 +73,6 @@ export default class Main extends cc.Component {
           3: '不支持的渠道',
           4: '验证失败',
           5: '未知错误',
-          6: '凭证已过期',
           7: 'DAPP已删除',
           8: '外部服务错误'
         };
@@ -88,8 +96,23 @@ export default class Main extends cc.Component {
    */
   private async _loginGac(token: string) {
 
+    // 记录token到缓存。
+    cc.sys.localStorage.setItem('tk', token);
+
     // 登入。
-    let cmd = await this._login(cache.testServerIp, cache.port, 'gac', '', token, true);
+    try {
+      var cmd = await this._login(cache.testServerIp, cache.port, 'gac', '', token, true);
+    } catch (err) {
+      if (err instanceof TokenExpiredError) {
+        cc.log('凭证已过期');
+        cc.sys.localStorage.removeItem('tk');
+
+        // 发出结束重连事件。
+        this.scheduleOnce(() => {
+          cache.otherEvent.emit('tokenExpiredAndLoginRetryStopped');
+        });
+      }
+    }
     if (!cmd) {
       return;
     }
@@ -100,7 +123,17 @@ export default class Main extends cc.Component {
         try {
           var cmd2 = await this._login(cache.testServerIp, cache.port, 'gac', '', token, false);
         } catch (err) {
-          cc.error(err);
+          if (err instanceof TokenExpiredError) {
+            cc.log('凭证已过期');
+            cc.sys.localStorage.removeItem('tk');
+
+            // 发出结束重连事件。
+            cache.otherEvent.emit('tokenExpiredAndLoginRetryStopped');
+
+            return;  // 这会终止重连循环。
+          } else {
+            cc.error(err);
+          }
         }
         if (!cmd2) {
           cc.error('重连失败。');
@@ -236,26 +269,44 @@ export default class Main extends cc.Component {
                 (async () => {
 
                   // 跟踪遗留的订单。
-                  let orders = cc.sys.localStorage.getItem('payingOrders');
-                  if (orders instanceof Array) {
-                    let copy = orders.slice();  // 异步过程，别的地方可能会改变orders，因此这里需要拷贝。
+                  let str = cc.sys.localStorage.getItem('payingOrders2');
+                  if (str) {
+                    let orders: string[] | undefined;
                     try {
-                      for (let orderId of copy) {
-                        let res = await cache.cmd.execCmd('gacPay/traceOrder', { orderId });
+                      orders = JSON.parse(str);
+                    } catch (err) {
+                    }
+                    if (orders instanceof Array) {
+                      try {
+                        for (let orderId of orders) {
+                          let res = await cache.cmd.execCmd('gacPay/traceOrder', { orderId });
 
-                        // 如果已成功跟踪则从缓存中删除。
-                        if (res.err === undefined) {
-                          let orders2 = cc.sys.localStorage.getItem('payingOrders');
-                          if (orders2 instanceof Array) {
-                            let idx = orders2.indexOf(orderId);
-                            if (idx >= 0) {
-                              orders2.splice(idx, 1);
+                          // 如果已成功跟踪则从缓存中删除。
+                          if (res.err === undefined) {
+                            let str2 = cc.sys.localStorage.getItem('payingOrders2');
+                            if (str2) {
+                              let orders2: string[] | undefined;
+                              try {
+                                orders2 = JSON.parse(str2);
+                              } catch (err) {
+                              }
+                              if (orders2 instanceof Array) {
+                                let idx = orders2.indexOf(orderId);
+                                if (idx >= 0) {
+                                  orders2.splice(idx, 1);
+                                  if (orders2.length > 0) {
+                                    cc.sys.localStorage.setItem('payingOrders2', JSON.stringify(orders2));
+                                  } else {
+                                    cc.sys.localStorage.removeItem('payingOrders2');
+                                  }
+                                }
+                              }
                             }
                           }
                         }
+                      } catch (err) {
+                        cc.error(err);
                       }
-                    } catch (err) {
-                      cc.error(err);
                     }
                   }
 
@@ -272,7 +323,15 @@ export default class Main extends cc.Component {
 
             });
           });
-          cache.gacSdk.getTemporaryCode(cache.appId);
+          cache.otherEvent.on('tokenExpiredAndLoginRetryStopped', () => {
+            cache.gacSdk.getTemporaryCode(cache.appId);
+          });
+          let token = cc.sys.localStorage.getItem('tk');
+          if (token) {
+            cache.sdkEvent.emit('gacLogin', token);
+          } else {
+            cache.gacSdk.getTemporaryCode(cache.appId);
+          }
           return;
         }
 

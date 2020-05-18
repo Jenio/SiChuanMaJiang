@@ -273,7 +273,10 @@ export default class Hall extends cc.Component {
    * 点击战绩按钮。
    */
   onClickRecord() {
-    uiTools.toast('暂未开放');
+    uiTools.openWindow('prefab/inningHis').catch((err) => {
+      cc.error(err);
+      uiTools.toast('打开战绩界面失败');
+    });
   }
 
   /**

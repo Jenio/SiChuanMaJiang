@@ -42,11 +42,21 @@ export default class Recharge extends cc.Component {
       }
 
       // 清缓存。
-      let orders = cc.sys.localStorage.getItem('payingOrders');
+      let str = cc.sys.localStorage.getItem('payingOrders2');
+      let orders: string[] | undefined;
+      try {
+        orders = JSON.parse(str);
+      } catch (err) {
+      }
       if (orders instanceof Array) {
         let idx = orders.indexOf(this._payingOrderId);
         if (idx >= 0) {
           orders.splice(idx, 1);
+          if (orders.length > 0) {
+            cc.sys.localStorage.setItem('payingOrders2', JSON.stringify(orders));
+          } else {
+            cc.sys.localStorage.removeItem('payingOrders2');
+          }
         }
       }
 
@@ -108,13 +118,22 @@ export default class Recharge extends cc.Component {
     this._payingGacOrderId = res.gacOrderId;
 
     // 开始支付。
-    let orders = cc.sys.localStorage.getItem('payingOrders');
-    if (orders instanceof Array) {
-      orders.push(this._payingOrderId);
+    let orders: string[] | undefined;
+    let str = cc.sys.localStorage.getItem('payingOrders2');
+    if (str) {
+      try {
+        orders = JSON.parse(str);
+      } catch (err) {
+      }
+      if (orders instanceof Array) {
+        orders.push(this._payingOrderId);
+      } else {
+        orders = [this._payingOrderId];
+      }
     } else {
       orders = [this._payingOrderId];
     }
-    cc.sys.localStorage.setItem('payingOrders', orders);
+    cc.sys.localStorage.setItem('payingOrders2', JSON.stringify(orders));
     cache.gacSdk.takePreOrderNum(this._payingGacOrderId);
   }
 

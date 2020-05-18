@@ -61,3 +61,45 @@ export interface PlayerResultInfo {
    */
   detail: ScoreItem[];
 }
+
+/**
+ * 游戏记录中的用户。
+ */
+export interface GameRecordUser {
+
+  /**
+   * 用户ID。
+   */
+  uid: number;
+
+  /**
+   * 是否庄家。
+   */
+  banker: boolean;
+
+  /**
+   * 分数。
+   */
+  score: number;
+}
+
+/**
+ * 游戏记录。
+ */
+export interface GameRecord {
+
+  /**
+   * 时间戳。
+   */
+  ts: number;
+
+  /**
+   * 房间ID。
+   */
+  roomId: string;
+
+  /**
+   * 游戏参与的玩家。
+   */
+  record: GameRecordUser[];
+}

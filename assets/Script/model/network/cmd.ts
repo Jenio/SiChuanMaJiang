@@ -80,6 +80,8 @@ export class CmdClient {
       };
 
       this._ws.onmessage = (ev) => {
+        cc.log('message come:',ev)
+
         let data = ev.data;
         if (data instanceof ArrayBuffer) {
           let view = new DataView(data);
@@ -170,6 +172,8 @@ export class CmdClient {
             return;
           }
           */
+
+          cc.log(`this._pendingCmd.set(sn, (${JSON.stringify(data)}: any) => {,`)
           let t = typeof data;
           if (t === 'object') {
             res(data);
